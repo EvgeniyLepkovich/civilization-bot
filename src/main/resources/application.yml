@@ -1,0 +1,17 @@
+bot:
+  token: Njg1MjQ5MDM2OTk0NzQwMjQy.XmF86w.HfgeDbCTgpN28Cc5OFkm6TOxYKY
+
+host: localhost
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://${host:localhost}:3306/civilization_rating_database
+    username: civilizationBot
+    password: 1234567890
+
+discord:
+  administrator:
+    name: gigasvin323
