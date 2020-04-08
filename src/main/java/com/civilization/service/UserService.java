@@ -10,6 +10,6 @@ public interface UserService {
     User findByUsername(String username);
     void save(User user);
     List<User> createFFAGameForUsers(List<String> usernames);
-    List<GameResultDTO> createFFAReport(List<GameResultDTO> gameResults) throws Exception;
+    List<GameResultDTO> createFFAReport(List<GameResultDTO> gameResults, String eventOwner) throws Exception;
     UserRank findUserRank(String username);
 }

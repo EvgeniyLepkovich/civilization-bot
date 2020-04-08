@@ -1,6 +1,5 @@
 package com.civilization.service.impl;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,8 +63,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<GameResultDTO> createFFAReport(List<GameResultDTO> gameResults) throws Exception {
-        validateGameResults(gameResults);
+    public List<GameResultDTO> createFFAReport(List<GameResultDTO> gameResults, String eventOwner) throws Exception {
+        validateGameResults(gameResults, eventOwner);
         addDestroyedUsersToGameResults(gameResults);
         calculateRating(gameResults);
         List<User> users = toUsers(gameResults);
@@ -98,7 +97,7 @@ public class UserServiceImpl implements UserService {
                 .anyMatch(gameResult -> gameResult.getUsername().equalsIgnoreCase(username));
     }
 
-    private void validateGameResults(List<GameResultDTO> gameResults) throws Exception {
+    private void validateGameResults(List<GameResultDTO> gameResults, String eventOwner) throws Exception {
         if (CollectionUtils.isEmpty(gameResults)) {
             throw new Exception("no game results");
         }
@@ -111,6 +110,22 @@ public class UserServiceImpl implements UserService {
         if (!isAllPlayersParticipantOnGame(activeGame, gameResults)) {
             throw new Exception("not all users are participants of game");
         }
+        if (!isHostedByGameOwner(activeGame, eventOwner)) {
+            throw new Exception("reported not by game owner");
+        }
+    }
+
+    private boolean isHostedByGameOwner(ActiveGame activeGame, String eventOwner) throws Exception {
+        return getGameHost(activeGame).equalsIgnoreCase(eventOwner);
+    }
+
+    private String getGameHost(ActiveGame activeGame) throws Exception {
+        return activeGame.getUserActiveGames().stream()
+                .filter(UserActiveGame::isGameHost)
+                .map(UserActiveGame::getUser)
+                .map(User::getUsername)
+                .findFirst()
+                .orElseThrow(() -> new Exception("can't find game host"));
     }
 
     private boolean isAllPlayersParticipantOnGame(ActiveGame activeGame, List<GameResultDTO> gameResults) {

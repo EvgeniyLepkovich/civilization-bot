@@ -28,6 +28,9 @@ public class UserActiveGame {
     @JoinColumn(name = "active_game_id")
     private ActiveGame activeGame;
 
+    private boolean isGameConfirmed;
+    private boolean isGameHost;
+
     public UserActiveGame() {
     }
 
@@ -35,8 +38,6 @@ public class UserActiveGame {
         this.user = user;
         this.activeGame = activeGame;
     }
-
-    private boolean isGameConfirmed;
 
     public long getId() {
         return id;
@@ -70,17 +71,26 @@ public class UserActiveGame {
         isGameConfirmed = gameConfirmed;
     }
 
+    public boolean isGameHost() {
+        return isGameHost;
+    }
+
+    public void setGameHost(boolean gameHost) {
+        isGameHost = gameHost;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserActiveGame that = (UserActiveGame) o;
         return id == that.id &&
-                isGameConfirmed == that.isGameConfirmed;
+                isGameConfirmed == that.isGameConfirmed &&
+                isGameHost == that.isGameHost;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, isGameConfirmed);
+        return Objects.hash(id, isGameConfirmed, isGameHost);
     }
 }

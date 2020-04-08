@@ -33,8 +33,12 @@ public class CreateFFAReportOperation implements EventOperation {
 
     @Override
     public MessageEmbed executeForMessageEmbed(MessageReceivedEvent event) throws Exception {
-        List<GameResultDTO> results = userService.createFFAReport(mapper.map(event.getMessage().getContentDisplay()));
+        List<GameResultDTO> results = userService.createFFAReport(mapper.map(event.getMessage().getContentDisplay()), getEventOwner(event));
         return withResultMessage(results);
+    }
+
+    private String getEventOwner(MessageReceivedEvent event) {
+        return event.getAuthor().getName();
     }
 
     private MessageEmbed withResultMessage(List<GameResultDTO> gameResults) {
