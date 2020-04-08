@@ -38,8 +38,9 @@ public class UpdateMessageOfCreateFFAGameAfterUserDeclinedParticipationOperation
                 .setTitle("ffa game №" + gameId + " was declined")
                 .setColor(Color.green);
 
-        List<User> allUsers = getAllUsers(activeGame);
-        activeGame.getUserActiveGames().forEach(uag -> builder.addField("@" + uag.getUser().getUsername(), "current rating: " + uag.getUser().getRating() + "\nIs ready: " + toEmojy(uag.isGameConfirmed()), true));
+        activeGame.getUserActiveGames().stream()
+                .sorted(Comparator.comparing(uag -> uag.getUser().getUsername()))
+                .forEach(uag -> builder.addField("@" + uag.getUser().getUsername(), "current rating: " + uag.getUser().getRating() + "\nIs ready: " + toEmojy(uag.isGameConfirmed()), true));
         String footerMessage = FOOTER_MESSAGE_PATTERN.replaceAll("\\{gameId}", gameId);
         MessageEmbed newMessageContent = builder.setFooter(footerMessage, null).build();
 
@@ -51,14 +52,4 @@ public class UpdateMessageOfCreateFFAGameAfterUserDeclinedParticipationOperation
         return isReady ? ":partying_face:" : ":rage:";
     }
 
-    private java.util.List<User> getAllUsers(ActiveGame activeGame) {
-        return activeGame.getUserActiveGames().stream()
-                .map(UserActiveGame::getUser)
-                .collect(Collectors.toList());
-    }
-//
-//    private String getSpaceIndent(List<User> users) {
-//        String maxUsername = users.stream().map(User::getUsername).max(Comparator.comparingInt(String::length)).orElse("");
-//        return IntStream.range(0, Math.abs(maxUsername.length())).mapToObj(o -> " ").collect(Collectors.joining());
-//    }
 }
