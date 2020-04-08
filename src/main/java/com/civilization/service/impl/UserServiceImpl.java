@@ -28,6 +28,7 @@ import io.vavr.API;
 @Service
 public class UserServiceImpl implements UserService {
     private static final long DEFAULT_RAITING = 1000L;
+    public static final int BONUS_RATING_FOR_ALIVE = 15;
 
     @Autowired
     private UserRepository userRepository;
@@ -142,17 +143,17 @@ public class UserServiceImpl implements UserService {
     }
 
     private void calculateRatingForWinner(List<GameResultDTO> gameResults) {
-        Long totalChangeRating = calculateTotalChangeRating(gameResults);
+        Long totalChangeRating = calculateTotalChangeRatingWithoutBonuses(gameResults);
 
         gameResults.stream()
                 .filter(gameResult -> UserGameResult.WINNER.equals(gameResult.getGameResult()))
                 .forEach(gameResult -> gameResult.setNewRating(gameResult.getOldRating() + totalChangeRating));
     }
 
-    private Long calculateTotalChangeRating(List<GameResultDTO> gameResults) {
+    private Long calculateTotalChangeRatingWithoutBonuses(List<GameResultDTO> gameResults) {
         return gameResults.stream()
                 //for winner old rating and new rating are similar here
-                .map(gameResult -> Math.abs(gameResult.getOldRating() - gameResult.getNewRating()))
+                .map(gameResult -> Math.abs(gameResult.getOldRating() / 100))
                 .reduce(0L, Long::sum);
     }
 
@@ -179,7 +180,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private Long calculateRatingForAlive(Long currentRating) {
-        return currentRating + (currentRating / 100 + 15);
+        return currentRating + (-(currentRating / 100) + BONUS_RATING_FOR_ALIVE);
     }
 
     private Long calculateRatingForWinner(Long currentRating) {
