@@ -1,5 +1,6 @@
 package com.civilization.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ import io.vavr.API;
 public class UserServiceImpl implements UserService {
     private static final long DEFAULT_RAITING = 1000L;
     public static final int BONUS_RATING_FOR_ALIVE = 15;
+    public static final int KOEF_FOR_LEAVERS = 3;
 
     @Autowired
     private UserRepository userRepository;
@@ -64,10 +66,36 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public List<GameResultDTO> createFFAReport(List<GameResultDTO> gameResults) throws Exception {
         validateGameResults(gameResults);
+        addDestroyedUsersToGameResults(gameResults);
         calculateRating(gameResults);
         List<User> users = toUsers(gameResults);
         List<User> savedUsers = saveResults(users);
         return gameResultsMapper.map(savedUsers, gameResults.get(0).getGameId());
+    }
+
+    private void addDestroyedUsersToGameResults(List<GameResultDTO> gameResults) throws Exception {
+        ActiveGame activeGame = getActiveGame(gameResults.get(0).getGameId());
+        List<User> destroyedUsers = getListOfDestroyedUsers(activeGame, gameResults);
+        gameResults.addAll(toGameResult(activeGame, destroyedUsers));
+    }
+
+    private List<GameResultDTO> toGameResult(ActiveGame activeGame, List<User> destroyedUsers) {
+        return destroyedUsers.stream()
+                .map(user -> new GameResultDTO(activeGame.getId(), user.getUsername(), UserGameResult.DESTROYED))
+                .collect(Collectors.toList());
+    }
+
+    private List<User> getListOfDestroyedUsers(ActiveGame activeGame, List<GameResultDTO> gameResults) {
+        return activeGame.getUserActiveGames().stream()
+                .map(UserActiveGame::getUser)
+                .filter(user -> !isUsernameInGameResultList(user.getUsername(), gameResults))
+                .collect(Collectors.toList());
+
+    }
+
+    private boolean isUsernameInGameResultList(String username, List<GameResultDTO> gameResults) {
+        return gameResults.stream()
+                .anyMatch(gameResult -> gameResult.getUsername().equalsIgnoreCase(username));
     }
 
     private void validateGameResults(List<GameResultDTO> gameResults) throws Exception {
@@ -171,12 +199,19 @@ public class UserServiceImpl implements UserService {
         if (UserGameResult.ALIVE.equals(gameResult)) {
             return calculateRatingForAlive(currentRating);
         }
+        if (UserGameResult.DESTROYED.equals(gameResult)) {
+            return calculateRatingForDestroyed(currentRating);
+        }
 
         return calculateRatingForLeaver(currentRating);
     }
 
+    private Long calculateRatingForDestroyed(Long currentRating) {
+        return currentRating - currentRating / 100;
+    }
+
     private Long calculateRatingForLeaver(Long currentRating) {
-        return currentRating - currentRating / 100 * 3;
+        return currentRating - currentRating / 100 * KOEF_FOR_LEAVERS;
     }
 
     private Long calculateRatingForAlive(Long currentRating) {

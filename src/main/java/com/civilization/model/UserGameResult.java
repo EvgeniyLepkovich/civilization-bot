@@ -1,5 +1,5 @@
 package com.civilization.model;
 
 public enum UserGameResult {
-    WINNER, ALIVE, LEAVE, NOT_DETECTED;
+    WINNER, ALIVE, LEAVE, DESTROYED, NOT_DETECTED;
 }
