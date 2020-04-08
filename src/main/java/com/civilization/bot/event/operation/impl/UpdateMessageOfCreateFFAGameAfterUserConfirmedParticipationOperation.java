@@ -37,7 +37,6 @@ public class UpdateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperatio
                 .setTitle("ffa game №" + gameId + " was created")
                 .setColor(Color.green);
 
-        List<User> allUsers = getAllUsers(activeGame);
         activeGame.getUserActiveGames().forEach(uag -> builder.addField("@" + uag.getUser().getUsername(), "current rating: " + uag.getUser().getRating() + "\nIs ready: " + toEmojy(uag.isGameConfirmed()), true));
         String footerMessage = FOOTER_MESSAGE_PATTERN.replaceAll("\\{gameId}", gameId);
         MessageEmbed newMessageContent = builder.setFooter(footerMessage, null).build();

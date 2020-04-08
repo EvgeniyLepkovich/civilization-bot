@@ -9,6 +9,7 @@ import javax.transaction.NotSupportedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.civilization.bot.event.ClearConfirmMessagesAfterGameStartedEvent;
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.model.ActiveGame;
 import com.civilization.service.ActiveGameService;
@@ -36,6 +37,8 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
     private ActiveGameService activeGameService;
     @Autowired
     private UpdateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation;
+    @Autowired
+    private ClearConfirmMessagesAfterGameStartedEvent clearConfirmMessagesAfterGameStartedEvent;
 
     @Override
     public String execute(MessageReceivedEvent event) throws RateLimitedException {
@@ -44,12 +47,17 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
         Long gameId = getGameId(message);
         Optional<ActiveGame> activeGame = activeGameService.setUserConfirmedGame(gameId, triggeredEventOwner);
 
-        if (activeGame.isPresent()) {
-            String resultMessage = generateGameStartMessage(activeGame.get(), triggeredEventOwner);
-            updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation.updateGameMessage(activeGame.get());
-            return resultMessage;
+        if (!activeGame.isPresent()) {
+            return generateExceptionMessage(gameId, triggeredEventOwner);
         }
-        return generateExceptionMessage(gameId, triggeredEventOwner);
+
+        if (activeGame.get().isStarted()) {
+            clearConfirmMessagesAfterGameStartedEvent.execute(gameId, event);
+        }
+
+        String resultMessage = generateGameStartMessage(activeGame.get(), triggeredEventOwner);
+        updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation.updateGameMessage(activeGame.get());
+        return resultMessage;
     }
 
     @Override
