@@ -2,8 +2,8 @@ package com.civilization.model;
 
 public interface UserRank {
     String getUsername();
-    String getRating();
-    String getGamesCount();
-    String getWins();
-    String getLeaves();
+    Long getRating();
+    Long getGamesCount();
+    Long getWins();
+    Long getLeaves();
 }

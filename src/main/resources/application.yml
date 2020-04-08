@@ -1,12 +1,12 @@
 bot:
-  token: Njg1MjQ5MDM2OTk0NzQwMjQy.XmF86w.HfgeDbCTgpN28Cc5OFkm6TOxYKY
+  token: Njg1MjQ5MDM2OTk0NzQwMjQy.XofHAg.5KCA1IDVl_SmAXSRU_sbmPTyDlc
 
 host: localhost
 
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
   datasource:
     url: jdbc:mysql://${host:localhost}:3306/civilization_rating_database
     username: civilizationBot

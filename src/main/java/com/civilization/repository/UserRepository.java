@@ -17,13 +17,13 @@ public interface UserRepository extends CrudRepository<User, Long> {
     List<User> findByUsernameInList(String usernames);
 
     @Query(value =
-            "select u.username, u.rating, count(gr.game_result_id), " +
+            "select u.username, u.rating, count(gr.game_result_id) as gamesCount, " +
                     "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"WINNER\" and username = ?1) as wins, " +
                     "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"LEAVE\" and username = ?1) as leaves " +
                     "from user as u " +
                     "left join game_result gr on gr.user_id = u.user_id " +
-                    "group by u.username, u.rating " +
-                    "    where username = ?1", nativeQuery = true)
+                    "where username = ?1 " +
+                    "group by u.username, u.rating ", nativeQuery = true)
     UserRank findUserRank(String username);
 
     @Query(value = "select rating from user where username = ?1", nativeQuery = true)
