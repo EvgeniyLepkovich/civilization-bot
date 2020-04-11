@@ -42,7 +42,7 @@ public class CreateFFAGameOperation implements EventOperation {
     @Override
     public MessageEmbed executeForMessageEmbed(MessageReceivedEvent event) throws Exception {
         String message = StringUtils.normalizeSpace(event.getMessage().getContentDisplay());
-        List<User> users = userService.createFFAGameForUsers(getUsernames(message));
+        List<User> users = userService.createFFAGameForUsers(getUsernames(message), getHost(event));
         return getCreateFFAGameMessage(users);
     }
 
@@ -56,17 +56,10 @@ public class CreateFFAGameOperation implements EventOperation {
                 .addField("test", "test", true)
                 .build();
 
-
-//        users.forEach(user -> builder.addField(user.getUsername(), "rating: " + user.getRating() + "\nIs ready: " + isUserConfirmedGame(gameId, user), true));
         users.forEach(user -> builder.addField("@" + user.getUsername(), "current rating: " + user.getRating() + "\nIs ready: " + toEmojy(isUserConfirmedGame(gameId, user)), true));
         String footerMessage = FOOTER_MESSAGE_PATTERN.replaceAll("\\{gameId}", gameId);
         return builder.setFooter(footerMessage, null).build();
     }
-
-//    private String getSpaceIndent(List<User> users) {
-//        String maxUsername = users.stream().map(User::getUsername).max(Comparator.comparingInt(String::length)).orElse("");
-//        return IntStream.range(0, Math.abs(maxUsername.length())).mapToObj(o -> " ").collect(Collectors.joining());
-//    }
 
     private String toEmojy(boolean isReady) {
         return isReady ? ":partying_face:" : ":rage:";
@@ -84,7 +77,7 @@ public class CreateFFAGameOperation implements EventOperation {
                 .collect(Collectors.toList());
     }
 
-    private String getTriggeredEventOwner(MessageReceivedEvent event) {
+    private String getHost(MessageReceivedEvent event) {
         return event.getAuthor().getName();
     }
 

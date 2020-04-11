@@ -43,8 +43,7 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
     @Override
     public String execute(MessageReceivedEvent event) throws RateLimitedException {
         String triggeredEventOwner = getTriggeredEventOwner(event);
-        String message = event.getMessage().getContentDisplay();
-        Long gameId = getGameId(message);
+        Long gameId = getGameId(event.getMessage().getContentDisplay());
         Optional<ActiveGame> activeGame = activeGameService.setUserConfirmedGame(gameId, triggeredEventOwner);
 
         if (!activeGame.isPresent()) {

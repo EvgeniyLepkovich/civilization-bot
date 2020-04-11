@@ -21,6 +21,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 @Component("createFFAReportOperation")
 public class CreateFFAReportOperation implements EventOperation {
 
+    public static final String ADMIN_ROLE = "админ";
     @Autowired
     private UserService userService;
     @Autowired
@@ -33,8 +34,13 @@ public class CreateFFAReportOperation implements EventOperation {
 
     @Override
     public MessageEmbed executeForMessageEmbed(MessageReceivedEvent event) throws Exception {
-        List<GameResultDTO> results = userService.createFFAReport(mapper.map(event.getMessage().getContentDisplay()), getEventOwner(event));
+        List<GameResultDTO> results = userService.createFFAReport(mapper.map(event.getMessage().getContentDisplay()), getEventOwner(event), isAdmin(event));
         return withResultMessage(results);
+    }
+
+    private boolean isAdmin(MessageReceivedEvent event) {
+        return event.getMember().getRoles().stream()
+                .anyMatch(role -> ADMIN_ROLE.equalsIgnoreCase(role.getName()));
     }
 
     private String getEventOwner(MessageReceivedEvent event) {

@@ -55,16 +55,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public List<User> createFFAGameForUsers(List<String> usernames) {
+    public List<User> createFFAGameForUsers(List<String> usernames, String hostname) {
         Set<User> users = getOrCreateUsers(usernames);
-        addNewActiveGameForEachUser(users);
+        addNewActiveGameForEachUser(users, hostname);
         return (List<User>) userRepository.saveAll(users);
     }
 
     @Override
     @Transactional
     public List<GameResultDTO> createFFAReport(List<GameResultDTO> gameResults, String eventOwner) throws Exception {
-        validateGameResults(gameResults, eventOwner);
+        return this.createFFAReport(gameResults, eventOwner, false);
+    }
+
+    @Override
+    @Transactional
+    public List<GameResultDTO> createFFAReport(List<GameResultDTO> gameResults, String eventOwner, boolean isAdmin) throws Exception {
+        validateGameResults(gameResults, eventOwner, isAdmin);
         addDestroyedUsersToGameResults(gameResults);
         calculateRating(gameResults);
         List<User> users = toUsers(gameResults);
@@ -97,7 +103,7 @@ public class UserServiceImpl implements UserService {
                 .anyMatch(gameResult -> gameResult.getUsername().equalsIgnoreCase(username));
     }
 
-    private void validateGameResults(List<GameResultDTO> gameResults, String eventOwner) throws Exception {
+    private void validateGameResults(List<GameResultDTO> gameResults, String eventOwner, boolean isAdmin) throws Exception {
         if (CollectionUtils.isEmpty(gameResults)) {
             throw new Exception("no game results");
         }
@@ -109,6 +115,9 @@ public class UserServiceImpl implements UserService {
 
         if (!isAllPlayersParticipantOnGame(activeGame, gameResults)) {
             throw new Exception("not all users are participants of game");
+        }
+        if (isAdmin) {
+            return;
         }
         if (!isHostedByGameOwner(activeGame, eventOwner)) {
             throw new Exception("reported not by game owner");
@@ -178,59 +187,68 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() ->new Exception("Game with id: " + gameId + ", was not detected"));
     }
 
-    private void calculateRating(List<GameResultDTO> gameResults) {
-        gameResults.forEach(this::calculateRating);
+    private void calculateRating(List<GameResultDTO> gameResults) throws Exception {
+        GameResultDTO winner = findWinnerResult(gameResults);
+        gameResults.forEach(gameResult -> calculateRating(gameResult, winner));
 
         //rating for winner depends on all other calculations
-        calculateRatingForWinner(gameResults);
+        calculateRatingForWinner(gameResults, winner);
     }
 
-    private void calculateRatingForWinner(List<GameResultDTO> gameResults) {
-        Long totalChangeRating = calculateTotalChangeRatingWithoutBonuses(gameResults);
+    private void calculateRatingForWinner(List<GameResultDTO> gameResults, GameResultDTO winner) throws Exception {
+        Long totalChangeRating = calculateTotalChangeRatingWithoutBonuses(gameResults, winner);
 
         gameResults.stream()
                 .filter(gameResult -> UserGameResult.WINNER.equals(gameResult.getGameResult()))
                 .forEach(gameResult -> gameResult.setNewRating(gameResult.getOldRating() + totalChangeRating));
     }
 
-    private Long calculateTotalChangeRatingWithoutBonuses(List<GameResultDTO> gameResults) {
+    private GameResultDTO findWinnerResult(List<GameResultDTO> gameResults) throws Exception {
         return gameResults.stream()
+                .filter(gameResult -> UserGameResult.WINNER.equals(gameResult.getGameResult()))
+                .findFirst()
+                .orElseThrow(() -> new Exception("can't find winner"));
+    }
+
+    private Long calculateTotalChangeRatingWithoutBonuses(List<GameResultDTO> gameResults, GameResultDTO winner) {
+        return gameResults.stream()
+                .filter(gameResult -> !UserGameResult.WINNER.equals(gameResult.getGameResult()))
                 //for winner old rating and new rating are similar here
-                .map(gameResult -> Math.abs(gameResult.getOldRating() / 100))
+                .map(gameResult -> Math.abs(Math.round(gameResult.getOldRating().doubleValue() / winner.getOldRating().doubleValue() * 10)))
                 .reduce(0L, Long::sum);
     }
 
-    private void calculateRating(GameResultDTO gameResult) {
+    private void calculateRating(GameResultDTO gameResult, GameResultDTO winner) {
         Long currentRating = userRepository.findCurrentRating(gameResult.getUsername());
-        Long newRating = calculateRating(currentRating, gameResult.getGameResult());
+        Long newRating = calculateRating(currentRating, gameResult.getGameResult(), winner.getOldRating());
         gameResult.setOldRating(currentRating);
         gameResult.setNewRating(newRating);
     }
 
-    private Long calculateRating(Long currentRating, UserGameResult gameResult) {
+    private Long calculateRating(Long currentRating, UserGameResult gameResult, Long winnerRating) {
         if (UserGameResult.WINNER.equals(gameResult)) {
             return calculateRatingForWinner(currentRating);
         }
         if (UserGameResult.ALIVE.equals(gameResult)) {
-            return calculateRatingForAlive(currentRating);
+            return calculateRatingForAlive(currentRating, winnerRating);
         }
         if (UserGameResult.DESTROYED.equals(gameResult)) {
-            return calculateRatingForDestroyed(currentRating);
+            return calculateRatingForDestroyed(currentRating, winnerRating);
         }
 
-        return calculateRatingForLeaver(currentRating);
+        return calculateRatingForLeaver(currentRating, winnerRating);
     }
 
-    private Long calculateRatingForDestroyed(Long currentRating) {
-        return currentRating - currentRating / 100;
+    private Long calculateRatingForDestroyed(Long currentRating, Long winnerRating) {
+        return currentRating - Math.round(currentRating.doubleValue() / winnerRating.doubleValue() * 10);
     }
 
-    private Long calculateRatingForLeaver(Long currentRating) {
-        return currentRating - currentRating / 100 * KOEF_FOR_LEAVERS;
+    private Long calculateRatingForLeaver(Long currentRating, Long winnerRating) {
+        return currentRating - Math.round((currentRating.doubleValue() / winnerRating.doubleValue()) * 10 * KOEF_FOR_LEAVERS);
     }
 
-    private Long calculateRatingForAlive(Long currentRating) {
-        return currentRating + (-(currentRating / 100) + BONUS_RATING_FOR_ALIVE);
+    private Long calculateRatingForAlive(Long currentRating, Long winnerRating) {
+        return currentRating + Math.round((-(currentRating.doubleValue() / winnerRating.doubleValue()) * 10 + BONUS_RATING_FOR_ALIVE));
     }
 
     private Long calculateRatingForWinner(Long currentRating) {
@@ -242,10 +260,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.findUserRank(username);
     }
 
-    private void addNewActiveGameForEachUser(Set<User> users) {
+    private void addNewActiveGameForEachUser(Set<User> users, String hostname) {
         ActiveGame activeGame = activeGameRepository.save(new ActiveGame());
         for (User user: users) {
             UserActiveGame userActiveGame = new UserActiveGame(user, activeGame);
+            if (user.getUsername().equalsIgnoreCase(hostname)) {
+                userActiveGame.setGameHost(Boolean.TRUE);
+            }
             user.getUserActiveGames().add(userActiveGame);
             activeGame.getUserActiveGames().add(userActiveGame);
             userActiveGameRepository.save(userActiveGame);
