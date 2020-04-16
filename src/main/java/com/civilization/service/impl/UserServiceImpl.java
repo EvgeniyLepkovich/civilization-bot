@@ -113,6 +113,10 @@ public class UserServiceImpl implements UserService {
             throw new Exception("this game was already reported");
         }
 
+        if (!activeGame.isStarted()) {
+            throw new Exception("this game was not started yet");
+        }
+
         if (!isAllPlayersParticipantOnGame(activeGame, gameResults)) {
             throw new Exception("not all users are participants of game");
         }
