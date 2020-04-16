@@ -9,6 +9,6 @@ import java.util.function.Predicate;
 public class CreateFFAReportMessageRule implements MessageListenedAppliedRule {
     @Override
     public Predicate<String> getRule() {
-        return message -> message.matches("[!]report\\s\\d+\\swinner:\\s@[A-Za-z0-9А-Яа-я\\(\\)\\_].+\\salive:\\s@[A-Za-z0-9А-Яа-я\\(\\)\\_].+");
+        return message -> message.matches("[!]report\\s\\d+\\swinner:\\s@[A-Za-z0-9А-Яа-я\\(\\)\\_].+");
     }
 }
