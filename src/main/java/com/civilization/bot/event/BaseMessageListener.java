@@ -9,9 +9,9 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class BaseMessageListener extends ListenerAdapter {
 
-    private MessageValidator messageValidator;
-    private EventOperation eventOperation;
-    private MessageListenedAppliedRule messageRule;
+    private final MessageValidator messageValidator;
+    private final EventOperation eventOperation;
+    private final MessageListenedAppliedRule messageRule;
 
     protected BaseMessageListener(MessageValidator messageValidator, EventOperation eventOperation, MessageListenedAppliedRule messageRule) {
         this.messageValidator = messageValidator;
