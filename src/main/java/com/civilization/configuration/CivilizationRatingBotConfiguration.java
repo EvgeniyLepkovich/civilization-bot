@@ -1,28 +1,28 @@
 package com.civilization.configuration;
 
-import java.util.List;
-
 import com.civilization.bot.CivilizationRatingBot;
-import com.civilization.bot.event.ConfirmParticipationInFFAGameMessageListener;
-import com.civilization.bot.event.CreateFFAGameMessageListener;
-import com.civilization.bot.event.CreateFFAReportMessageListener;
-import com.civilization.bot.event.DeclineParticipationInFFAGameMessageListener;
-import com.civilization.bot.event.SelfRankMessageListener;
-import com.civilization.bot.event.UserRankMessageListener;
 import com.civilization.configuration.custom.DiscordMessageListenerQualifier;
-
+import com.civilization.service.RatingTableService;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.security.auth.login.LoginException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @Configuration
 public class CivilizationRatingBotConfiguration {
+
+    private static final int UPDATE_RATING_TABLE_DELAY = 600000;
+    private static final int UPDATE_RATING_TABLE_PERIOD = 600000;
 
     @Value("${bot.token}")
     private String botToken;
@@ -31,11 +31,26 @@ public class CivilizationRatingBotConfiguration {
     @DiscordMessageListenerQualifier
     private List<ListenerAdapter> listeners;
 
+    @Autowired
+    private RatingTableService ratingTableService;
+
     @Bean(name = "CivilizationRatingBotInstance")
     public JDA getCivilizationRatingBot() throws LoginException {
-        JDA bot = new CivilizationRatingBot()
-                .initBot(botToken);
+        JDA bot = new CivilizationRatingBot().initBot(botToken);
+        bot.addEventListener(new ListenerAdapter() {
+            @Override
+            public void onReady(ReadyEvent event) {
+                ratingTableService.drawTable(bot);
+                new Timer().scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        ratingTableService.drawTable(bot);
+                    }
+                }, UPDATE_RATING_TABLE_DELAY, UPDATE_RATING_TABLE_PERIOD);
+            }});
+
         listeners.forEach(bot::addEventListener);
         return bot;
     }
+
 }

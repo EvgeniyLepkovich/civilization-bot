@@ -27,16 +27,8 @@ public class UserRankOperation implements EventOperation {
         return userRank.getUsername() +
                 " rating: " + userRank.getRating() +
                 ", games: " + userRank.getGamesCount() +
-                ", wins: " + getWins(userRank) + "%" +
-                ", leaves: " + getLeaves(userRank) + "%";
-    }
-
-    private Long getWins(UserRank userRank) {
-        return userRank.getGamesCount() == 0 ? userRank.getGamesCount() : userRank.getWins() / userRank.getGamesCount() * 100;
-    }
-
-    private Long getLeaves(UserRank userRank) {
-        return userRank.getGamesCount() == 0 ? userRank.getGamesCount() : userRank.getLeaves() / userRank.getGamesCount() * 100;
+                ", wins: " + userRank.getWins() +
+                ", leaves: " + userRank.getLeaves();
     }
 
     @Override

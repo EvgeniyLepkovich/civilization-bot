@@ -26,6 +26,15 @@ public interface UserRepository extends CrudRepository<User, Long> {
                     "group by u.username, u.rating ", nativeQuery = true)
     UserRank findUserRank(String username);
 
+    @Query(value =
+            "select u.username, u.rating, count(gr.game_result_id) as gamesCount, " +
+                    "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"WINNER\") as wins, " +
+                    "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"LEAVE\") as leaves " +
+                    "from user as u " +
+                    "left join game_result gr on gr.user_id = u.user_id " +
+                    "group by u.username, u.rating ", nativeQuery = true)
+    List<UserRank> findAllUsersRanks();
+
     @Query(value = "select rating from user where username = ?1", nativeQuery = true)
     Long findCurrentRating(String username);
 }

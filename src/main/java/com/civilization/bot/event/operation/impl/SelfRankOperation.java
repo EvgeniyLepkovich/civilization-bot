@@ -2,6 +2,7 @@ package com.civilization.bot.event.operation.impl;
 
 import javax.transaction.NotSupportedException;
 
+import net.dv8tion.jda.core.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,16 +28,8 @@ public class SelfRankOperation implements EventOperation {
         return userRank.getUsername() +
                 " rating: " + userRank.getRating() +
                 ", games: " + userRank.getGamesCount() +
-                ", wins: " + getWins(userRank) + "%" +
-                ", leaves: " + getLeaves(userRank) + "%";
-    }
-
-    private Long getWins(UserRank userRank) {
-        return userRank.getGamesCount() == 0 ? userRank.getGamesCount() : userRank.getWins() / userRank.getGamesCount() * 100;
-    }
-
-    private Long getLeaves(UserRank userRank) {
-        return userRank.getGamesCount() == 0 ? userRank.getGamesCount() : userRank.getLeaves() / userRank.getGamesCount() * 100;
+                ", wins: " + userRank.getWins() +
+                ", leaves: " + userRank.getLeaves();
     }
 
     @Override
