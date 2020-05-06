@@ -14,6 +14,16 @@ public class CreatedGameMessagesCache {
 
     private Map<String, Message> cache = new HashMap<>();
 
+    private Map<String, String> cacheLanguage = new HashMap<>();
+
+    public void putLanguage(String gameId, String language) {
+        cacheLanguage.put(gameId, language);
+    }
+
+    public String getLanguage(Long gameId) {
+        return cacheLanguage.get(gameId);
+    }
+
     public void putMessage(String gameId, Message message) {
         cache.put(gameId, message);
     }

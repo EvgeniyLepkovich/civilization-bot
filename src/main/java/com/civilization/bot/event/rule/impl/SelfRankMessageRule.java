@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 public class SelfRankMessageRule implements MessageListenedAppliedRule {
     @Override
     public Predicate<String> getRule() {
-        return message -> message.split("\\s+").length == 1 && message.equalsIgnoreCase("!rank");
+        return message -> message.split("\\s+").length == 1
+                && (message.equalsIgnoreCase("!rank") || message.equalsIgnoreCase("!рейтинг"));
     }
 }
