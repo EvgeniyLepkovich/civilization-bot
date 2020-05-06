@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RatingTableServiceImpl implements RatingTableService {
@@ -49,12 +51,16 @@ public class RatingTableServiceImpl implements RatingTableService {
     public void drawTable(JDA botInstance) {
         MessageEmbed message = getMessageEmbed();
         TextChannel textChannel = botInstance.getTextChannelById(706585065815015487L);
-        List<Message> oldMessages = textChannel.getHistory().retrievePast(1).complete();
-        if (oldMessages.size() > 0) {
-            oldMessages.get(0).editMessage(message).queue();
+        Optional<List<Message>> oldMessages = getOldMessages(textChannel);
+        if (oldMessages.isPresent() && oldMessages.get().size() > 0) {
+            oldMessages.get().get(0).editMessage(message).queue();
         } else {
             textChannel.sendMessage(message).queue();
         }
+    }
+
+    private Optional<List<Message>> getOldMessages(TextChannel textChannel) {
+        return Optional.ofNullable(textChannel.getHistory()).map(h -> h.retrievePast(1).complete());
     }
 
     private MessageEmbed getMessageEmbed() {
