@@ -10,6 +10,7 @@ import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
@@ -22,6 +23,8 @@ public class RatingTableServiceImpl implements RatingTableService {
 
     @Autowired
     private UserRepository userRepository;
+    @Value("${bot.rating-channel-id}")
+    private Long ratingChannelId;
 
     Comparator<UserRank> userCompetitiveTableComparator = new Comparator<UserRank>() {
         @Override
@@ -50,7 +53,7 @@ public class RatingTableServiceImpl implements RatingTableService {
     @Override
     public void drawTable(JDA botInstance) {
         MessageEmbed message = getMessageEmbed();
-        TextChannel textChannel = botInstance.getTextChannelById(706585065815015487L);
+        TextChannel textChannel = botInstance.getTextChannelById(ratingChannelId);
         Optional<List<Message>> oldMessages = getOldMessages(textChannel);
         if (oldMessages.isPresent() && oldMessages.get().size() > 0) {
             oldMessages.get().get(0).editMessage(message).queue();
