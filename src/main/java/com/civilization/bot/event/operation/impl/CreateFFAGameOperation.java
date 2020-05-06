@@ -10,8 +10,12 @@ import java.util.stream.Stream;
 
 import javax.transaction.NotSupportedException;
 
+import com.civilization.bot.event.validator.Validator;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Member;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.civilization.bot.event.operation.EventOperation;
@@ -33,6 +37,9 @@ public class CreateFFAGameOperation implements EventOperation {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    @Qualifier("userConnectedToSteamValidator")
+    private Validator userConnectedToSteamValidator;
 
     @Override
     public String execute(MessageReceivedEvent event) throws NotSupportedException {
@@ -43,7 +50,19 @@ public class CreateFFAGameOperation implements EventOperation {
     public MessageEmbed executeForMessageEmbed(MessageReceivedEvent event) throws Exception {
         String message = StringUtils.normalizeSpace(event.getMessage().getContentDisplay());
         List<User> users = userService.createFFAGameForUsers(getUsernames(message), getHost(event));
+        checkAllUsersConnectedToSteam(event, users);
         return getCreateFFAGameMessage(users);
+    }
+
+    private void checkAllUsersConnectedToSteam(MessageReceivedEvent event, List<User> users) throws Exception {
+        userConnectedToSteamValidator.validate(toMembers(event, users));
+    }
+
+    private List<Member> toMembers(MessageReceivedEvent event, List<User> users) {
+        return users.stream()
+                .map(user -> event.getGuild().getMembersByName(user.getUsername(), false))
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
     }
 
     private MessageEmbed getCreateFFAGameMessage(List<User> users) {
@@ -51,10 +70,6 @@ public class CreateFFAGameOperation implements EventOperation {
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("ffa game №" + gameId + " was created")
                 .setColor(Color.green);
-        MessageEmbed test = new EmbedBuilder()
-                .setColor(Color.green)
-                .addField("test", "test", true)
-                .build();
 
         users.forEach(user -> builder.addField("@" + user.getUsername(), "current rating: " + user.getRating() + "\nIs ready: " + toEmojy(isUserConfirmedGame(gameId, user)), true));
         String footerMessage = FOOTER_MESSAGE_PATTERN.replaceAll("\\{gameId}", gameId);

@@ -3,6 +3,7 @@ package com.civilization.bot.event;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.civilization.exception.CodedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -43,8 +44,12 @@ public class CreateFFAGameMessageListener extends BaseMessageListener {
 
     @Override
     protected void sendMessage(MessageReceivedEvent event) throws Exception {
-        MessageEmbed messageEmbed = eventOperation.executeForMessageEmbed(event);
-        Message message = event.getChannel().sendMessage(messageEmbed).complete(true);
-        createdGameMessagesCache.putMessage(gameIdParser.getGameId(messageEmbed.getTitle()), message);
+        try {
+            MessageEmbed messageEmbed = eventOperation.executeForMessageEmbed(event);
+            Message message = event.getChannel().sendMessage(messageEmbed).complete(true);
+            createdGameMessagesCache.putMessage(gameIdParser.getGameId(messageEmbed.getTitle()), message);
+        } catch (CodedException e) {
+            event.getChannel().sendMessage(e.getMessage()).queue();
+        }
     }
 }
