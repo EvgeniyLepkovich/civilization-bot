@@ -20,7 +20,7 @@ public class CreatedGameMessagesCache {
         cacheLanguage.put(gameId, language);
     }
 
-    public String getLanguage(Long gameId) {
+    public String getLanguage(String gameId) {
         return cacheLanguage.get(gameId);
     }
 

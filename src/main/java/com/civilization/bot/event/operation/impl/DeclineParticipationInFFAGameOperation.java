@@ -50,7 +50,7 @@ public class DeclineParticipationInFFAGameOperation implements EventOperation {
     public String execute(MessageReceivedEvent event) throws RateLimitedException {
         String triggeredEventOwner = getTriggeredEventOwner(event);
         String message = event.getMessage().getContentDisplay();
-        boolean isEnglish = cacheLanguage.getLanguage(getGameId(message)).contains("isEnglish");
+        boolean isEnglish = cacheLanguage.getLanguage(getGameId(message).toString()).contains("isEnglish");
         Optional<ActiveGame> activeGame = activeGameService.setUserDeclinedGame(getGameId(message), triggeredEventOwner);
 
         if (activeGame.isPresent()) {

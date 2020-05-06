@@ -56,7 +56,7 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
     public String execute(MessageReceivedEvent event) throws RateLimitedException {
         String triggeredEventOwner = getTriggeredEventOwner(event);
         Long gameId = getGameId(event.getMessage().getContentDisplay());
-        boolean isEnglish = cacheLanguage.getLanguage(gameId).contains("isEnglish");
+        boolean isEnglish = cacheLanguage.getLanguage(gameId.toString()).contains("isEnglish");
         Optional<ActiveGame> activeGame = activeGameService.setUserConfirmedGame(gameId, triggeredEventOwner);
 
         if (!activeGame.isPresent()) {
