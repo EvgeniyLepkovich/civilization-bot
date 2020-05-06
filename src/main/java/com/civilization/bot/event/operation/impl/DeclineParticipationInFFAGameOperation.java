@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.NotSupportedException;
 
+import com.civilization.cache.CreatedGameMessagesCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -42,11 +43,14 @@ public class DeclineParticipationInFFAGameOperation implements EventOperation {
     @Value("${discord.administrator.name}")
     private String administratorName;
 
+    @Autowired
+    private CreatedGameMessagesCache cacheLanguage;
+
     @Override
     public String execute(MessageReceivedEvent event) throws RateLimitedException {
         String triggeredEventOwner = getTriggeredEventOwner(event);
         String message = event.getMessage().getContentDisplay();
-        boolean isEnglish = message.equals("isEnglish");
+        boolean isEnglish = cacheLanguage.getLanguage(getGameId(message)).contains("isEnglish");
         Optional<ActiveGame> activeGame = activeGameService.setUserDeclinedGame(getGameId(message), triggeredEventOwner);
 
         if (activeGame.isPresent()) {
