@@ -28,11 +28,11 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     @Query(value =
             "select u.username, u.rating, count(gr.game_result_id) as gamesCount, " +
-                    "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"WINNER\") as wins, " +
-                    "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"LEAVE\") as leaves " +
+                    "(select count(game_result_id) from game_result gr where gr.user_game_result = \"WINNER\" and gr.user_id = u.user_id) as wins, " +
+                    "(select count(game_result_id) from game_result gr where gr.user_game_result = \"LEAVE\" and gr.user_id = u.user_id) as leaves " +
                     "from user as u " +
                     "left join game_result gr on gr.user_id = u.user_id " +
-                    "group by u.username, u.rating ", nativeQuery = true)
+                    "group by u.username, u.rating", nativeQuery = true)
     List<UserRank> findAllUsersRanks();
 
     @Query(value = "select rating from user where username = ?1", nativeQuery = true)
