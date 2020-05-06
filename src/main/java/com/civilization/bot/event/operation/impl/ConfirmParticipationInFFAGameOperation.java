@@ -68,7 +68,13 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
         }
 
         String resultMessage = generateGameStartMessage(activeGame.get(), triggeredEventOwner, isEnglish);
-        updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation.updateGameMessage(activeGame.get());
+
+        if (isEnglish) {
+            updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation.updateGameMessageEn(activeGame.get());
+        } else {
+            updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation.updateGameMessageRu(activeGame.get());
+        }
+
         return resultMessage;
     }
 

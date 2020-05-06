@@ -12,7 +12,7 @@ public class CreateFFAGameMessageRule implements MessageListenedAppliedRule {
     @Override
     public Predicate<String> getRule() {
         return message -> (message.startsWith("!ffa") || message.startsWith("!ффа"))
-                && message.matches("[!]\\w+\\s@([A-Za-z0-9А-Яа-я\\(\\)\\_]).+")
+                && message.matches("[!]([A-Za-z0-9А-Яа-я\\(\\)\\_])+\\s@([A-Za-z0-9А-Яа-я\\(\\)\\_]).+")
                 && isSixUniquePlayers(message);
     }
 
