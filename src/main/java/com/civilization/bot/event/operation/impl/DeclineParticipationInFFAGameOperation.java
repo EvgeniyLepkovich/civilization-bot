@@ -20,12 +20,19 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 @Component("declineParticipationInFFAGameOperation")
 public class DeclineParticipationInFFAGameOperation implements EventOperation {
 
-    private static final String PARTICIPANT_DECLINED_GAME_MESSAGE_PATTERN =
+    private static final String PARTICIPANT_DECLINED_GAME_MESSAGE_PATTERN_EN =
             "@{participant} declined the game number: {gameId}!\n" +
             "{participants} - your game was canceled";
 
-    private static final String ERROR_DECLINED_MESSAGE_PATTERN =
+    private static final String PARTICIPANT_DECLINED_GAME_MESSAGE_PATTERN_RU =
+            "@{participant} отклонил игру под номером: {gameId}!\n" +
+            "{participants} - ваша игра была отклонена";
+
+    private static final String ERROR_DECLINED_MESSAGE_PATTERN_EN =
             "Had some troubles declining the game, please contact admin: @{admin}";
+
+    private static final String ERROR_DECLINED_MESSAGE_PATTERN_RU =
+            "возникли проблемы с отказом игры, пожалуйста обратитесь к адмиристратору: @{admin}";
 
     @Autowired
     private ActiveGameService activeGameService;
@@ -43,7 +50,7 @@ public class DeclineParticipationInFFAGameOperation implements EventOperation {
         Optional<ActiveGame> activeGame = activeGameService.setUserDeclinedGame(getGameId(message), triggeredEventOwner);
 
         if (activeGame.isPresent()) {
-            String resultMessage = getParticipantDeclinedGameMessage(activeGame.get(), triggeredEventOwner);
+            String resultMessage = getParticipantDeclinedGameMessage(activeGame.get(), triggeredEventOwner, isEnglish);
             if (isEnglish) {
                 updateMessageOfCreateFFAGameAfterUserDeclinedParticipationOperation.updateGameMessageEn(activeGame.get());
             } else {
@@ -51,7 +58,7 @@ public class DeclineParticipationInFFAGameOperation implements EventOperation {
             }
             return resultMessage;
         }
-        return getErrorDeclinedMessage();
+        return getErrorDeclinedMessage(isEnglish);
     }
 
     @Override
@@ -59,13 +66,17 @@ public class DeclineParticipationInFFAGameOperation implements EventOperation {
         throw new NotSupportedException();
     }
 
-    private String getErrorDeclinedMessage() {
-        return ERROR_DECLINED_MESSAGE_PATTERN
+    private String getErrorDeclinedMessage(boolean isEnglish) {
+        String errorDeclineMessage = isEnglish ? ERROR_DECLINED_MESSAGE_PATTERN_EN : ERROR_DECLINED_MESSAGE_PATTERN_RU;
+        return errorDeclineMessage
                 .replace("{admin}", administratorName);
     }
 
-    private String getParticipantDeclinedGameMessage(ActiveGame activeGame, String triggeredEventOwner) {
-        return PARTICIPANT_DECLINED_GAME_MESSAGE_PATTERN
+    private String getParticipantDeclinedGameMessage(ActiveGame activeGame, String triggeredEventOwner, boolean isEnglish) {
+        String participantDeclineGameMessage = isEnglish ?
+                PARTICIPANT_DECLINED_GAME_MESSAGE_PATTERN_EN :
+                PARTICIPANT_DECLINED_GAME_MESSAGE_PATTERN_RU;
+        return participantDeclineGameMessage
                 .replace("{participant}", triggeredEventOwner)
                 .replace("{gameId}", String.valueOf(activeGame.getId()))
                 .replace("{participants}", getListOfPlayers(activeGame));
