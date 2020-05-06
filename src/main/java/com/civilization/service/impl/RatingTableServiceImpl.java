@@ -7,7 +7,6 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +16,8 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class RatingTableServiceImpl implements RatingTableService {
@@ -75,11 +76,22 @@ public class RatingTableServiceImpl implements RatingTableService {
     }
 
     private void generateMessageBody(EmbedBuilder builder, List<UserRank> allUsers) {
-        for (int i = 0; i < allUsers.size(); i++) {
-            UserRank concreteUser = allUsers.get(i);
-            builder.addField("", (i+1) + ". " + concreteUser.getUsername() + "  |  " + "points: " + concreteUser.getRating() +
-                    "  |  " + "games: " + concreteUser.getGamesCount() + "  |  " + "wins: " + concreteUser.getWins() + "  |  " + "leaves: " + concreteUser.getLeaves(), false);
-        }
+        addFieldToBody(builder, "place", fromInts(IntStream.range(1, allUsers.size() + 1).boxed().collect(Collectors.toList())));
+        addFieldToBody(builder, "username", allUsers.stream().map(UserRank::getUsername).collect(Collectors.toList()));
+        addFieldToBody(builder, "points", allUsers.stream().map(u -> u.getRating().toString()).collect(Collectors.toList()));
+    }
+
+    private List<String> fromInts(List<Integer> values) {
+        return values.stream().map(Object::toString).collect(Collectors.toList());
+    }
+
+    private void addFieldToBody(EmbedBuilder builder, String name, List<String> values) {
+        builder.addField(name, concatValues(values), true);
+    }
+
+    private String concatValues(List<String> values) {
+        return values.stream()
+                .reduce("", (a, b) -> a + "\n" + b);
     }
 
     private List<UserRank> getSortedUsers() {
