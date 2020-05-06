@@ -65,7 +65,7 @@ public class UpdateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperatio
                 .stream()
                 .sorted(Comparator.comparing(uag -> uag.getUser().getUsername()))
                 .forEach(uag -> builder.addField("@" + uag.getUser().getUsername(), "текущий рейтинг: " +
-                        uag.getUser().getRating() + "\nГотов: " + toEmojy(uag.isGameConfirmed()), true));
+                        uag.getUser().getRating() + "\nГотовность: " + toEmojy(uag.isGameConfirmed()), true));
         String footerMessage = FOOTER_MESSAGE_PATTERN_RU.replaceAll("\\{gameId}", gameId);
         MessageEmbed newMessageContent = builder.setFooter(footerMessage, null).build();
 
