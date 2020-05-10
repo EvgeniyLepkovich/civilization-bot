@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 public class UserRankMessageRule implements MessageListenedAppliedRule {
     @Override
     public Predicate<String> getRule() {
-        return message -> message.matches("[!]rank\\s@[A-Za-z0-9А-Яа-я\\(\\)\\_]+");
+        return message -> (message.matches("[!]rank\\s@[A-Za-z0-9А-Яа-я\\(\\)\\_]+") ||
+                message.matches("[!]рейтинг\\s@[A-Za-z0-9А-Яа-я\\(\\)\\_]+") );
     }
 }

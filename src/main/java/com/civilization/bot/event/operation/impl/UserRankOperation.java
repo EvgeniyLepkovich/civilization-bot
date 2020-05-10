@@ -20,15 +20,28 @@ public class UserRankOperation implements EventOperation {
 
     @Override
     public String execute(MessageReceivedEvent event) {
-        return getUserRankMessage(userService.findUserRank(getTarget(event)));
-    }
+        boolean isEnglish = event.getMessage().getContentDisplay().contains("!rank");
+        if (isEnglish) {
+            return getUserRankMessageEn(userService.findUserRank(getTarget(event)));
+        } else {
+            return getUserRankMessageRu(userService.findUserRank(getTarget(event)));
+        }
+     }
 
-    private String getUserRankMessage(UserRank userRank) {
+    private String getUserRankMessageEn(UserRank userRank) {
         return userRank.getUsername() +
                 " rating: " + userRank.getRating() +
                 ", games: " + userRank.getGamesCount() +
                 ", wins: " + userRank.getWins() +
                 ", leaves: " + userRank.getLeaves();
+    }
+
+    private String getUserRankMessageRu(UserRank userRank) {
+        return userRank.getUsername() +
+                " рейтинг: " + userRank.getRating() +
+                ", игр: " + userRank.getGamesCount() +
+                ", побед: " + userRank.getWins() +
+                ", ливов: " + userRank.getLeaves();
     }
 
     @Override
