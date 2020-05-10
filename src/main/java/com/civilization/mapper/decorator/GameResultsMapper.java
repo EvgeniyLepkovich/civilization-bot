@@ -105,8 +105,10 @@ public class GameResultsMapper {
         private static final String ALIVE_TAG = "alive: ";
         private static final String LEAVER_TAG = "leave: ";
 
+        private final Function<String, Integer> endIndexForWinner = message ->
+                message.contains(ALIVE_TAG) ? message.indexOf(ALIVE_TAG) - 1 : message.length();
         private final Function<String, String> winnerUsernamesString = message ->
-                message.substring(message.indexOf(WINNER_TAG) + WINNER_TAG.length(), message.indexOf(ALIVE_TAG) - 1);
+                message.substring(message.indexOf(WINNER_TAG) + WINNER_TAG.length(), endIndexForWinner.apply(message));
 
         private final Function<String, Integer> endIndexForAlive = message ->
                 message.contains(LEAVER_TAG) ? message.indexOf(LEAVER_TAG) - 1 : message.length();

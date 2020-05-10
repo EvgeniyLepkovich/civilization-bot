@@ -71,6 +71,7 @@ public class CreateFFAGameOperation implements EventOperation {
                 .setTitle("ffa game №" + gameId + " was created")
                 .setColor(Color.green);
 
+        users.sort(Comparator.comparing(User::getUsername));
         users.forEach(user -> builder.addField("@" + user.getUsername(), "current rating: " + user.getRating() + "\nIs ready: " + toEmojy(isUserConfirmedGame(gameId, user)), true));
         String footerMessage = FOOTER_MESSAGE_PATTERN.replaceAll("\\{gameId}", gameId);
         return builder.setFooter(footerMessage, null).build();
