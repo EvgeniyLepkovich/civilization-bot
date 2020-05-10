@@ -78,7 +78,13 @@ public class RatingTableServiceImpl implements RatingTableService {
     private void generateMessageBody(EmbedBuilder builder, List<UserRank> allUsers) {
         addFieldToBody(builder, "place", fromInts(IntStream.range(1, allUsers.size() + 1).boxed().collect(Collectors.toList())));
         addFieldToBody(builder, "username", allUsers.stream().map(UserRank::getUsername).collect(Collectors.toList()));
-        addFieldToBody(builder, "points", allUsers.stream().map(u -> u.getRating().toString()).collect(Collectors.toList()));
+        addFieldToBody(builder, "points | games | win", toPointsGamesWins(allUsers));
+    }
+
+    private List<String> toPointsGamesWins(List<UserRank> allUsers) {
+        return allUsers.stream()
+                .map(u -> u.getRating() + " | " + u.getGamesCount() + " | " + u.getWins())
+                .collect(Collectors.toList());
     }
 
     private List<String> fromInts(List<Integer> values) {
