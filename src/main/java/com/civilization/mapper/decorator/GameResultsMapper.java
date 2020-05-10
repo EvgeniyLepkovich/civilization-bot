@@ -7,6 +7,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.civilization.cache.CreatedGameMessagesCache;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.civilization.dto.GameResultDTO;
@@ -22,9 +24,21 @@ import io.vavr.API;
 @Component
 public class GameResultsMapper {
 
+    @Autowired
+    private CreatedGameMessagesCache cacheLanguage;
+
+    private static final String WINNER_TAG_EN = "winner: ";
+    private static final String ALIVE_TAG_EN = "alive: ";
+    private static final String LEAVER_TAG_EN = "leave: ";
+    private static final String WINNER_TAG_RU = "победитель: ";
+    private static final String ALIVE_TAG_RU = "выживший: ";
+    private static final String LEAVER_TAG_RU = "ливер: ";
+
 //    @Override
     public List<GameResultDTO> map(String message) {
-        return new GameResultsFromMessageMapperDecoratorBuilder()
+        String gameId = Long.valueOf(message.split(" ")[1]).toString();
+        boolean isEnglish = cacheLanguage.getLanguage(gameId).contains("isEnglish");
+        return new GameResultsFromMessageMapperDecoratorBuilder(isEnglish)
                 .withGameId(message)
                 .withWinners(message)
                 .withAlives(message)
@@ -101,9 +115,21 @@ public class GameResultsMapper {
     }
 
     private static class GameResultsFromMessageMapperDecoratorBuilder {
-        private static final String WINNER_TAG = "winner: ";
-        private static final String ALIVE_TAG = "alive: ";
-        private static final String LEAVER_TAG = "leave: ";
+        private static String WINNER_TAG;
+        private static String ALIVE_TAG;
+        private static String LEAVER_TAG;
+
+        public GameResultsFromMessageMapperDecoratorBuilder(boolean isEnglish) {
+            if (isEnglish) {
+                WINNER_TAG = WINNER_TAG_EN;
+                ALIVE_TAG = ALIVE_TAG_EN;
+                LEAVER_TAG = LEAVER_TAG_EN;
+            } else {
+                WINNER_TAG = WINNER_TAG_RU;
+                ALIVE_TAG = ALIVE_TAG_RU;
+                LEAVER_TAG = LEAVER_TAG_RU;
+            }
+        }
 
         private final Function<String, Integer> endIndexForWinner = message ->
                 message.contains(ALIVE_TAG) ? message.indexOf(ALIVE_TAG) - 1 : message.length();

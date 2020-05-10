@@ -1,44 +1,38 @@
 package com.civilization.bot.event.operation.impl;
 
-import java.awt.*;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import javax.transaction.NotSupportedException;
-
-import com.civilization.cache.CreatedGameMessagesCache;
+import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.bot.event.validator.Validator;
-import net.dv8tion.jda.core.MessageBuilder;
+import com.civilization.cache.CreatedGameMessagesCache;
+import com.civilization.model.ActiveGame;
+import com.civilization.model.User;
+import com.civilization.model.UserActiveGame;
+import com.civilization.service.UserService;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.civilization.bot.event.operation.EventOperation;
-import com.civilization.model.ActiveGame;
-import com.civilization.model.User;
-import com.civilization.model.UserActiveGame;
-import com.civilization.service.UserService;
-
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import javax.transaction.NotSupportedException;
+import java.awt.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component("createFFAGameOperation")
 public class CreateFFAGameOperation implements EventOperation {
 
     private static final String FOOTER_MESSAGE_PATTERN_EN =
             "please, confirm participation putting {gameId}+ in game chat\n" +
-            "you can decline game putting {gameId}- in chat";
+                    "you can decline game putting {gameId}- in chat";
 
     private static final String FOOTER_MESSAGE_PATTERN_RU =
             "пожалуйста, подтвердите участие написав {gameId}+ в чате игры\n" +
-            "вы можете отклонить игру написав {gameId}- в чат";
+                    "вы можете отклонить игру написав {gameId}- в чат";
 
     @Autowired
     private UserService userService;
@@ -47,7 +41,7 @@ public class CreateFFAGameOperation implements EventOperation {
     private Validator userConnectedToSteamValidator;
 
     @Autowired
-    private CreatedGameMessagesCache cacheLanguage;````````````
+    private CreatedGameMessagesCache cacheLanguage;
 
     @Override
     public String execute(MessageReceivedEvent event) throws NotSupportedException {
