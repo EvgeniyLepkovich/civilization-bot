@@ -31,7 +31,7 @@ public class GameResultsMapper {
     private static final String ALIVE_TAG_EN = "alive: ";
     private static final String LEAVER_TAG_EN = "leave: ";
     private static final String WINNER_TAG_RU = "победитель: ";
-    private static final String ALIVE_TAG_RU = "выживший: ";
+    private static final String ALIVE_TAG_RU = "выжил: ";
     private static final String LEAVER_TAG_RU = "ливер: ";
 
 //    @Override

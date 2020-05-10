@@ -32,7 +32,7 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
             "{users} - игра началась!\n" +
             "Id игры: {gameId}\n" +
             "Время начала: {startTime}\n" +
-            "создатель события должен создать репорт после окончания игры";
+            "создатель события обязан подать репорт после окончания игры";
 
     private static final String GAME_REGISTERED_MESSAGE_PATTERN_EN =
             "@{triggeredEventOwner} confirmed participation in game {gameId}!\n";
