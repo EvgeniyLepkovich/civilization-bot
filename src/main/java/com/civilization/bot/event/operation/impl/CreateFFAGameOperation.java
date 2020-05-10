@@ -31,8 +31,8 @@ public class CreateFFAGameOperation implements EventOperation {
                     "you can decline game putting {gameId}- in chat";
 
     private static final String FOOTER_MESSAGE_PATTERN_RU =
-            "пожалуйста, подтвердите участие написав {gameId}+ в чате игры\n" +
-                    "вы можете отклонить игру написав {gameId}- в чат";
+            "пожалуйста, подтвердите участие написав {gameId}+\n" +
+                    "вы можете отклонить игру написав {gameId}-";
 
     @Autowired
     private UserService userService;
@@ -92,9 +92,10 @@ public class CreateFFAGameOperation implements EventOperation {
                 .setTitle("ФФА игра №" + gameId + " создана")
                 .setColor(Color.green);
 
+        users.sort(Comparator.comparing(User::getUsername));
         users.forEach(user -> builder
-                .addField("@" + user.getUsername(), "текущий ретинг: " + user.getRating()
-                        + "\nГотовность: " + toEmojy(isUserConfirmedGame(gameId, user)), true));
+                .addField("@" + user.getUsername(), "текущий рейтинг: " + user.getRating()
+                        + "\nготовность: " + toEmojy(isUserConfirmedGame(gameId, user)), true));
         String footerMessage = FOOTER_MESSAGE_PATTERN_RU.replaceAll("\\{gameId}", gameId);
         return builder.setFooter(footerMessage, null).build();
     }

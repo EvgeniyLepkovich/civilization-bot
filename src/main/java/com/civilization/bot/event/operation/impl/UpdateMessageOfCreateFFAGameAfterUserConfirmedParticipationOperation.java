@@ -27,8 +27,8 @@ public class UpdateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperatio
                     "you can decline game putting {gameId}- in chat";
 
     private static final String FOOTER_MESSAGE_PATTERN_RU =
-            "пожалуйста, подтвердите участие написав {gameId}+ в чате игры\n" +
-                    "вы можете отклонить игру написав {gameId}- в чат";
+            "пожалуйста, подтвердите участие написав {gameId}+\n" +
+                    "вы можете отклонить игру написав {gameId}-";
 
     @Autowired
     private CreatedGameMessagesCache createdGameMessagesCache;
@@ -65,7 +65,7 @@ public class UpdateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperatio
                 .stream()
                 .sorted(Comparator.comparing(uag -> uag.getUser().getUsername()))
                 .forEach(uag -> builder.addField("@" + uag.getUser().getUsername(), "текущий рейтинг: " +
-                        uag.getUser().getRating() + "\nГотовность: " + toEmojy(uag.isGameConfirmed()), true));
+                        uag.getUser().getRating() + "\nготовность: " + toEmojy(uag.isGameConfirmed()), true));
         String footerMessage = FOOTER_MESSAGE_PATTERN_RU.replaceAll("\\{gameId}", gameId);
         MessageEmbed newMessageContent = builder.setFooter(footerMessage, null).build();
 

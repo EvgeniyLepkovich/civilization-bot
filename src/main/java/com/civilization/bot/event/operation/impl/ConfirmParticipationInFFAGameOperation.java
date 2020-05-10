@@ -40,8 +40,11 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
     private static final String GAME_REGISTERED_MESSAGE_PATTERN_RU =
             "@{triggeredEventOwner} подтвердил участие в игре {gameId}!\n";
 
-    private static final String ERROR_REGISTRATION_PATTERN = //temporal, until not moved to exception codes
+    private static final String ERROR_REGISTRATION_PATTERN_EN = //temporal, until not moved to exception codes
         "Had some troubles including: @{triggeredEventOwner}, in the game: {gameId}!\n";
+
+    private static final String ERROR_REGISTRATION_PATTERN_RU = //temporal, until not moved to exception codes
+        "проблемы подлючения у: @{triggeredEventOwner}, в игре: {gameId}!\n";
 
     @Autowired
     private ActiveGameService activeGameService;
@@ -60,7 +63,7 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
         Optional<ActiveGame> activeGame = activeGameService.setUserConfirmedGame(gameId, triggeredEventOwner);
 
         if (!activeGame.isPresent()) {
-            return generateExceptionMessage(gameId, triggeredEventOwner);
+            return generateExceptionMessage(gameId, triggeredEventOwner, isEnglish);
         }
 
         if (activeGame.get().isStarted()) {
@@ -109,10 +112,16 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
                 .replace("{startTime}", activeGame.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm")));
     }
 
-    private String generateExceptionMessage(Long activeGameId, String triggeredEventOwner) {
-        return ERROR_REGISTRATION_PATTERN
+    private String generateExceptionMessage(Long activeGameId, String triggeredEventOwner, boolean isEnglish) {
+        String exceptionMessage = isEnglish ?
+                ERROR_REGISTRATION_PATTERN_EN :
+                ERROR_REGISTRATION_PATTERN_RU;
+
+        return exceptionMessage
                 .replace("{triggeredEventOwner}", triggeredEventOwner)
                 .replace("{gameId}", String.valueOf(activeGameId));
+
+
     }
 
     private Long getGameId(String message) {
