@@ -16,3 +16,8 @@ spring:
 discord:
   administrator:
     name: gigasvin323
+    role:
+      name: админ
+  channel:
+    notification:
+      name: notification

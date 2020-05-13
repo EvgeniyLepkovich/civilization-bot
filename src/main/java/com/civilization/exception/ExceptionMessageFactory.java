@@ -13,6 +13,10 @@ public class ExceptionMessageFactory {
 
     public static final Map<ExceptionCode, String> exceptions = new HashMap<ExceptionCode, String>() {{
         put(ExceptionCode.USER_NOT_CONNECTED_TO_STEAM, "Some of users is not connected to steam. Please contact administrator.");
+        put(ExceptionCode.WRONG_CHANNEL_NAME_FOR_NOTIFICATION, "Wrong channel for notifications, please use the correct one");
+        put(ExceptionCode.NOTIFICATION_SENT_NOT_BY_ADMIN, "Notification for all users could be sent only by admin");
+        put(ExceptionCode.USERS_FOR_NOTIFICATION_NOT_FOUND, "Could not receive the list of users to send the message");
+        put(ExceptionCode.NOTIFICATION_MESSAGE_IS_BLANK, "Notification message is blank, please put something after !send");
     }};
 
     public static String getMessage(ExceptionCode code) {
