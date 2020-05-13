@@ -1,5 +1,6 @@
 package com.civilization.bot.event;
 
+import com.civilization.configuration.custom.annotation.RatingGamesChannelEventAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 @Component
 @DiscordMessageListenerQualifier
+@RatingGamesChannelEventAnnotation
 public class UserRankMessageListener extends BaseMessageListener {
 
     @Autowired

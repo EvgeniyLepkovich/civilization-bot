@@ -21,3 +21,5 @@ discord:
   channel:
     notification:
       name: notification
+    rating-games:
+      name: рейтинговые-игры, рейтинговые-отчеты

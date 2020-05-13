@@ -17,6 +17,8 @@ public class ExceptionMessageFactory {
         put(ExceptionCode.NOTIFICATION_SENT_NOT_BY_ADMIN, "Notification for all users could be sent only by admin");
         put(ExceptionCode.USERS_FOR_NOTIFICATION_NOT_FOUND, "Could not receive the list of users to send the message");
         put(ExceptionCode.NOTIFICATION_MESSAGE_IS_BLANK, "Notification message is blank, please put something after !send");
+        put(ExceptionCode.NO_AVAILABLE_CHANNELS_FOR_EVENT, "No available channels for event");
+        put(ExceptionCode.CHANNEL_NOT_SUPPORTED_FOR_EVENT, "Channel not supported for event");
     }};
 
     public static String getMessage(ExceptionCode code) {

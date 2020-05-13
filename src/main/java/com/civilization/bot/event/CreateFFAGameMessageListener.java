@@ -3,6 +3,7 @@ package com.civilization.bot.event;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.civilization.configuration.custom.annotation.RatingGamesChannelEventAnnotation;
 import com.civilization.exception.CodedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,6 +23,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 @Component
 @DiscordMessageListenerQualifier
+@RatingGamesChannelEventAnnotation
 public class CreateFFAGameMessageListener extends BaseMessageListener {
 
     private EventOperation eventOperation;
