@@ -1,5 +1,6 @@
 package com.civilization.bot.event;
 
+import com.civilization.configuration.custom.annotation.RatingGamesChannelEventAnnotation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import com.civilization.configuration.custom.DiscordMessageListenerQualifier;
 
 @Component
 @DiscordMessageListenerQualifier
+@RatingGamesChannelEventAnnotation
 public class ConfirmParticipationInFFAGameMessageListener extends BaseMessageListener {
 
     @Autowired
