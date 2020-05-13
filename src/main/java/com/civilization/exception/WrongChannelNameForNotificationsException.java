@@ -5,10 +5,10 @@ public class WrongChannelNameForNotificationsException extends CodedException {
     private static final ExceptionCode code = ExceptionCode.WRONG_CHANNEL_NAME_FOR_NOTIFICATION;
 
     public WrongChannelNameForNotificationsException() {
-        super(ExceptionMessageFactory.getMessage(code));
+        super(code);
     }
 
     public WrongChannelNameForNotificationsException(Throwable cause) {
-        super(ExceptionMessageFactory.getMessage(code), cause);
+        super(code, cause);
     }
 }
