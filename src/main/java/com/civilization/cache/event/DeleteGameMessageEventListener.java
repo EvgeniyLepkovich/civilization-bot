@@ -2,21 +2,16 @@ package com.civilization.cache.event;
 
 import com.civilization.cache.MessageGameIdPair;
 
-public class DeleteGameMessageEventListener implements EventListener {
-
-    private final GameMessageEvent activator = GameMessageEvent.MESSAGE_DELETED;
+public class DeleteGameMessageEventListener extends EventListener {
 
     @Override
-    public void execute(GameMessageEvent event, MessageGameIdPair messageGameIdPair) {
-        if (!activator.equals(event)) {
-            return;
-        }
-
+    protected void executeEvent(GameMessageEvent event, MessageGameIdPair messageGameIdPair) {
         messageGameIdPair.getFirst().delete().queue();
     }
 
     @Override
-    public GameMessageEvent getActivator() {
-        return activator;
+    protected GameMessageEvent getActivator() {
+        return GameMessageEvent.MESSAGE_DELETED;
     }
+
 }

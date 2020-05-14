@@ -9,21 +9,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.BiPredicate;
 
-public class GameTimerEventListener implements EventListener {
+public class GameTimerEventListener extends EventListener {
 
     private static final long THIRTY_MINUTES_DELAY = 1800000L;
 
-    private final GameMessageEvent activator = GameMessageEvent.NEW_MESSAGE_ADDED;
     private final BiPredicate<Message, MessageGameIdPair> messagesToDeleteCondition = (message, pair) ->
             message.getContentDisplay().equalsIgnoreCase(pair.getSecond() + "+") ||
             message.getContentDisplay().endsWith("confirmed participation in game " + pair.getSecond() + "!");
 
     @Override
-    public void execute(GameMessageEvent event, MessageGameIdPair messageGameIdPair) {
-        if (!activator.equals(event)) {
-            return;
-        }
-
+    protected void executeEvent(GameMessageEvent event, MessageGameIdPair messageGameIdPair) {
         TimerTask task = new TimerTask() {
             public void run() {
                 CreatedGameMessagesCache.getInstance().removeMessage(messageGameIdPair.getSecond());
@@ -38,7 +33,8 @@ public class GameTimerEventListener implements EventListener {
     }
 
     @Override
-    public GameMessageEvent getActivator() {
-        return activator;
+    protected GameMessageEvent getActivator() {
+        return GameMessageEvent.NEW_MESSAGE_ADDED;
     }
+
 }
