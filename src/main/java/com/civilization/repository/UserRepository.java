@@ -2,7 +2,6 @@ package com.civilization.repository;
 
 import com.civilization.model.User;
 import com.civilization.model.UserRank;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;

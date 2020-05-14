@@ -3,7 +3,6 @@ package com.civilization.bot.event;
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.bot.event.rule.MessageListenedAppliedRule;
 import com.civilization.bot.event.validator.MessageValidator;
-
 import com.civilization.exception.ChannelNotSupportedForEventException;
 import com.civilization.exception.CodedException;
 import com.civilization.exception.NoAvailableChannelsForEventException;

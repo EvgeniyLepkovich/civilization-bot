@@ -1,17 +1,16 @@
 package com.civilization.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.civilization.model.ActiveGame;
 import com.civilization.model.User;
 import com.civilization.model.UserActiveGame;
 import com.civilization.repository.ActiveGameRepository;
 import com.civilization.service.ActiveGameService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class ActiveGameServiceImpl implements ActiveGameService {

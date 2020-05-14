@@ -1,16 +1,11 @@
 package com.civilization.cache;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.civilization.cache.event.GameMessageEvent;
 import com.civilization.cache.event.GameMessageEventManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import net.dv8tion.jda.core.entities.Message;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CreatedGameMessagesCache {
 

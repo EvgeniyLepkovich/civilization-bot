@@ -1,5 +1,11 @@
 package com.civilization.mapper.decorator;
 
+import com.civilization.cache.CreatedGameMessagesCache;
+import com.civilization.dto.GameResultDTO;
+import com.civilization.model.*;
+import io.vavr.API;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -7,19 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.civilization.cache.CreatedGameMessagesCache;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.civilization.dto.GameResultDTO;
 //import com.civilization.mapper.GameResultsMapper;
-import com.civilization.model.ActiveGame;
-import com.civilization.model.GameResult;
-import com.civilization.model.User;
-import com.civilization.model.UserActiveGame;
-import com.civilization.model.UserGameResult;
-
-import io.vavr.API;
 
 @Component
 public class GameResultsMapper {

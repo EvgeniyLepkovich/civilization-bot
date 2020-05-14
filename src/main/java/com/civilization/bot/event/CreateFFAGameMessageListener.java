@@ -1,25 +1,19 @@
 package com.civilization.bot.event;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.civilization.configuration.custom.annotation.RatingGamesChannelEventAnnotation;
-import com.civilization.exception.CodedException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.bot.event.rule.MessageListenedAppliedRule;
 import com.civilization.bot.event.validator.MessageValidator;
 import com.civilization.cache.CreatedGameMessagesCache;
 import com.civilization.configuration.custom.DiscordMessageListenerQualifier;
+import com.civilization.configuration.custom.annotation.RatingGamesChannelEventAnnotation;
+import com.civilization.exception.CodedException;
 import com.civilization.util.GameIdParser;
-
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 @Component
 @DiscordMessageListenerQualifier

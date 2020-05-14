@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 public class GameTimerEventListener implements EventListener {
 

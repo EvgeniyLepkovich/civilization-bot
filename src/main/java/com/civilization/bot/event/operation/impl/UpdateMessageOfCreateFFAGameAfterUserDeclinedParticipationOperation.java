@@ -1,24 +1,16 @@
 package com.civilization.bot.event.operation.impl;
 
-import java.awt.*;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.civilization.cache.CreatedGameMessagesCache;
 import com.civilization.model.ActiveGame;
-import com.civilization.model.User;
-import com.civilization.model.UserActiveGame;
-
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import org.springframework.stereotype.Component;
+
+import java.awt.*;
+import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class UpdateMessageOfCreateFFAGameAfterUserDeclinedParticipationOperation {

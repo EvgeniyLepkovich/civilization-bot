@@ -1,8 +1,6 @@
 package com.civilization.cache.event;
 
 import com.civilization.cache.MessageGameIdPair;
-import com.civilization.configuration.custom.GameMessageCacheListenersQualifier;
-import org.springframework.stereotype.Component;
 
 public class DeleteGameMessageEventListener implements EventListener {
 

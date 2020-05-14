@@ -1,17 +1,14 @@
 package com.civilization.bot.event.operation.impl;
 
-import javax.transaction.NotSupportedException;
-
-import net.dv8tion.jda.core.JDA;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.model.UserRank;
 import com.civilization.service.UserService;
-
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.transaction.NotSupportedException;
 
 @Component("selfRankOperation")
 public class SelfRankOperation implements EventOperation {

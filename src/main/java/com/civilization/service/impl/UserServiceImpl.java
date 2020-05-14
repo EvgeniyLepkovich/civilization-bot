@@ -1,29 +1,22 @@
 package com.civilization.service.impl;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.civilization.dto.GameResultDTO;
 import com.civilization.mapper.decorator.GameResultsMapper;
-import com.civilization.model.ActiveGame;
-import com.civilization.model.GameResult;
-import com.civilization.model.User;
-import com.civilization.model.UserActiveGame;
-import com.civilization.model.UserGameResult;
-import com.civilization.model.UserRank;
+import com.civilization.model.*;
 import com.civilization.repository.ActiveGameRepository;
 import com.civilization.repository.GameResultRepository;
 import com.civilization.repository.UserActiveGameRepository;
 import com.civilization.repository.UserRepository;
 import com.civilization.service.UserService;
-
 import io.vavr.API;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
