@@ -27,7 +27,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 public class CreateFFAGameMessageListener extends BaseMessageListener {
 
     private EventOperation eventOperation;
-    private CreatedGameMessagesCache createdGameMessagesCache;
     private GameIdParser gameIdParser;
 
     @Autowired
@@ -35,13 +34,11 @@ public class CreateFFAGameMessageListener extends BaseMessageListener {
             MessageValidator messageValidator,
             @Qualifier("createFFAGameOperation") EventOperation eventOperation,
             @Qualifier("createFFAGameMessageRule") MessageListenedAppliedRule messageRule,
-            CreatedGameMessagesCache createdGameMessagesCache,
             GameIdParser gameIdParser) {
         super(messageValidator, eventOperation, messageRule);
 
         this.gameIdParser = gameIdParser;
         this.eventOperation = eventOperation;
-        this.createdGameMessagesCache = createdGameMessagesCache;
     }
 
     @Override
@@ -49,7 +46,7 @@ public class CreateFFAGameMessageListener extends BaseMessageListener {
         try {
             MessageEmbed messageEmbed = eventOperation.executeForMessageEmbed(event);
             Message message = event.getChannel().sendMessage(messageEmbed).complete(true);
-            createdGameMessagesCache.putMessage(gameIdParser.getGameId(messageEmbed.getTitle()), message);
+            CreatedGameMessagesCache.getInstance().putMessage(gameIdParser.getGameId(messageEmbed.getTitle()), message);
         } catch (CodedException e) {
             event.getChannel().sendMessage(e.getMessage()).queue();
         }

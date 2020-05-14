@@ -43,14 +43,11 @@ public class DeclineParticipationInFFAGameOperation implements EventOperation {
     @Value("${discord.administrator.name}")
     private String administratorName;
 
-    @Autowired
-    private CreatedGameMessagesCache cacheLanguage;
-
     @Override
     public String execute(MessageReceivedEvent event) throws RateLimitedException {
         String triggeredEventOwner = getTriggeredEventOwner(event);
         String message = event.getMessage().getContentDisplay();
-        boolean isEnglish = cacheLanguage.getLanguage(getGameId(message).toString()).contains("isEnglish");
+        boolean isEnglish = CreatedGameMessagesCache.getInstance().getLanguage(getGameId(message).toString()).contains("isEnglish");
         Optional<ActiveGame> activeGame = activeGameService.setUserDeclinedGame(getGameId(message), triggeredEventOwner);
 
         if (activeGame.isPresent()) {

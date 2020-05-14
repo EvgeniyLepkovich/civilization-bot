@@ -40,9 +40,6 @@ public class CreateFFAGameOperation implements EventOperation {
     @Qualifier("userConnectedToSteamValidator")
     private Validator userConnectedToSteamValidator;
 
-    @Autowired
-    private CreatedGameMessagesCache cacheLanguage;
-
     @Override
     public String execute(MessageReceivedEvent event) throws NotSupportedException {
         throw new NotSupportedException();
@@ -73,7 +70,7 @@ public class CreateFFAGameOperation implements EventOperation {
 
     private MessageEmbed getCreateFFAGameMessageEn(List<User> users) {
         String gameId = getCurrentCreateGameId(users.get(0));
-        cacheLanguage.putLanguage(gameId, "isEnglish");
+        CreatedGameMessagesCache.getInstance().putLanguage(gameId, "isEnglish");
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("ffa game №" + gameId + " was created")
                 .setColor(Color.green);
@@ -87,7 +84,7 @@ public class CreateFFAGameOperation implements EventOperation {
 
     private MessageEmbed getCreateFFAGameMessageRu(List<User> users) {
         String gameId = getCurrentCreateGameId(users.get(0));
-        cacheLanguage.putLanguage(gameId, "isRussian");
+        CreatedGameMessagesCache.getInstance().putLanguage(gameId, "isRussian");
         EmbedBuilder builder = new EmbedBuilder()
                 .setTitle("ФФА игра №" + gameId + " создана")
                 .setColor(Color.green);

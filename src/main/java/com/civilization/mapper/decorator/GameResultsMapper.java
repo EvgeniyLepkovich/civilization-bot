@@ -24,8 +24,6 @@ import io.vavr.API;
 @Component
 public class GameResultsMapper {
 
-    @Autowired
-    private CreatedGameMessagesCache cacheLanguage;
 
     private static final String WINNER_TAG_EN = "winner: ";
     private static final String ALIVE_TAG_EN = "alive: ";
@@ -36,8 +34,9 @@ public class GameResultsMapper {
 
 //    @Override
     public List<GameResultDTO> map(String message) {
+        CreatedGameMessagesCache createdGameMessagesCache = CreatedGameMessagesCache.getInstance();
         String gameId = Long.valueOf(message.split(" ")[1]).toString();
-        boolean isEnglish = cacheLanguage.getLanguage(gameId).contains("isEnglish");
+        boolean isEnglish = createdGameMessagesCache.getLanguage(gameId).contains("isEnglish");
         return new GameResultsFromMessageMapperDecoratorBuilder(isEnglish)
                 .withGameId(message)
                 .withWinners(message)

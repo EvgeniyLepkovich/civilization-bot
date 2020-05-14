@@ -31,11 +31,8 @@ public class UpdateMessageOfCreateFFAGameAfterUserDeclinedParticipationOperation
             "пожалуйста, подтвердите участие написав {gameId}+\n" +
                     "вы можете отклонить игру написав {gameId}-";
 
-    @Autowired
-    private CreatedGameMessagesCache createdGameMessagesCache;
-
     public void updateGameMessageEn(ActiveGame activeGame) throws RateLimitedException {
-        Message message = createdGameMessagesCache.getMessage(activeGame.getId());
+        Message message = CreatedGameMessagesCache.getInstance().getMessage(activeGame.getId());
         String gameId = String.valueOf(activeGame.getId());
 
         EmbedBuilder builder = new EmbedBuilder()
@@ -50,11 +47,11 @@ public class UpdateMessageOfCreateFFAGameAfterUserDeclinedParticipationOperation
         MessageEmbed newMessageContent = builder.setFooter(footerMessage, null).build();
 
         message.editMessage(newMessageContent).queue(success -> success.delete().queueAfter(5, TimeUnit.MINUTES));
-        createdGameMessagesCache.removeMessage(gameId);
+        CreatedGameMessagesCache.getInstance().removeMessage(gameId);
     }
 
     public void updateGameMessageRu(ActiveGame activeGame) throws RateLimitedException {
-        Message message = createdGameMessagesCache.getMessage(activeGame.getId());
+        Message message = CreatedGameMessagesCache.getInstance().getMessage(activeGame.getId());
         String gameId = String.valueOf(activeGame.getId());
 
         EmbedBuilder builder = new EmbedBuilder()
@@ -69,7 +66,7 @@ public class UpdateMessageOfCreateFFAGameAfterUserDeclinedParticipationOperation
         MessageEmbed newMessageContent = builder.setFooter(footerMessage, null).build();
 
         message.editMessage(newMessageContent).queue(success -> success.delete().queueAfter(5, TimeUnit.MINUTES));
-        createdGameMessagesCache.removeMessage(gameId);
+        CreatedGameMessagesCache.getInstance().removeMessage(gameId);
     }
 
     private String toEmojy(boolean isReady) {

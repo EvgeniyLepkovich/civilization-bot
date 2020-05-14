@@ -30,10 +30,8 @@ public class UpdateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperatio
             "пожалуйста, подтвердите участие написав {gameId}+\n" +
                     "вы можете отклонить игру написав {gameId}-";
 
-    @Autowired
-    private CreatedGameMessagesCache createdGameMessagesCache;
-
     public void updateGameMessageEn(ActiveGame activeGame) throws RateLimitedException {
+        CreatedGameMessagesCache createdGameMessagesCache = CreatedGameMessagesCache.getInstance();
         Message message = createdGameMessagesCache.getMessage(activeGame.getId());
         String gameId = String.valueOf(activeGame.getId());
 
@@ -54,6 +52,7 @@ public class UpdateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperatio
     }
 
     public void updateGameMessageRu(ActiveGame activeGame) throws RateLimitedException {
+        CreatedGameMessagesCache createdGameMessagesCache = CreatedGameMessagesCache.getInstance();
         Message message = createdGameMessagesCache.getMessage(activeGame.getId());
         String gameId = String.valueOf(activeGame.getId());
 
