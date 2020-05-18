@@ -61,9 +61,6 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
             return generateExceptionMessage(gameId, triggeredEventOwner, isEnglish);
         }
 
-        if (activeGame.get().isStarted()) {
-            clearConfirmMessagesAfterGameStartedEvent.execute(gameId, event);
-        }
 
         String resultMessage = generateGameStartMessage(activeGame.get(), triggeredEventOwner, isEnglish);
 
@@ -73,6 +70,11 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
             updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation.updateGameMessageRu(activeGame.get());
         }
 
+        if (activeGame.get().isStarted()) {
+            clearConfirmMessagesAfterGameStartedEvent.execute(gameId, event);
+            //remove started game from the waiting pool
+            CreatedGameMessagesCache.getInstance().removeStartedGame(String.valueOf(activeGame.get().getId()));
+        }
         return resultMessage;
     }
 

@@ -14,8 +14,6 @@ import javax.transaction.NotSupportedException;
 import java.awt.*;
 import java.util.List;
 
-//import com.civilization.mapper.GameResultsMapper;
-
 @Component("createFFAReportOperation")
 public class CreateFFAReportOperation implements EventOperation {
 

@@ -44,6 +44,14 @@ public class CreatedGameMessagesCache {
         gameMessageEventManager.notifyListeners(GameMessageEvent.MESSAGE_DELETED, new MessageGameIdPair(removedMessage, gameId));
     }
 
+    public void removeStartedGame(String gameId) {
+        cache.remove(gameId);
+    }
+
+    public boolean isGameExist(String gameId) {
+        return cache.get(gameId) != null;
+    }
+
     private static class CreatedGameMessagesCacheSeed {
         private static final CreatedGameMessagesCache SEED = new CreatedGameMessagesCache();
     }

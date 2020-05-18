@@ -21,6 +21,11 @@ public class GameTimerEventListener extends EventListener {
     protected void executeEvent(GameMessageEvent event, MessageGameIdPair messageGameIdPair) {
         TimerTask task = new TimerTask() {
             public void run() {
+                //game was already started
+                if (!CreatedGameMessagesCache.getInstance().isGameExist(messageGameIdPair.getSecond())) {
+                    return;
+                }
+
                 CreatedGameMessagesCache.getInstance().removeMessage(messageGameIdPair.getSecond());
                 List<Message> history = messageGameIdPair.getFirst().getChannel().getHistory().retrievePast(100).complete();
                 history.stream()
