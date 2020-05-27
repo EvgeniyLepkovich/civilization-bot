@@ -71,6 +71,7 @@ public class RatingTableServiceImpl implements RatingTableService {
         EmbedBuilder builder = new EmbedBuilder();
         generateMessageHeaders(builder);
         List<UserRank> allUsers = getSortedUsers();
+        allUsers = allUsers.subList(0, 50); // to avoid length body more then 1024 characters, pick top 50
         generateMessageBody(builder, allUsers);
         return builder.build();
     }
