@@ -2,6 +2,7 @@ package com.civilization.bot.event.operation.impl;
 
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.model.UserRank;
+import com.civilization.service.RatingService;
 import com.civilization.service.UserService;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -15,31 +16,20 @@ public class UserRankOperation implements EventOperation {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private RatingService ratingService;
 
     @Override
     public String execute(MessageReceivedEvent event) {
-        boolean isEnglish = event.getMessage().getContentDisplay().contains("!rank");
-        if (isEnglish) {
-            return getUserRankMessageEn(userService.findUserRank(getTarget(event)));
-        } else {
-            return getUserRankMessageRu(userService.findUserRank(getTarget(event)));
-        }
+            return getUserRankMessage(ratingService.findUserRank(getTarget(event)));
      }
 
-    private String getUserRankMessageEn(UserRank userRank) {
+    private String getUserRankMessage(UserRank userRank) {
         return userRank.getUsername() +
                 " rating: " + userRank.getRating() +
                 ", games: " + userRank.getGamesCount() +
                 ", wins: " + userRank.getWins() +
                 ", leaves: " + userRank.getLeaves();
-    }
-
-    private String getUserRankMessageRu(UserRank userRank) {
-        return userRank.getUsername() +
-                " рейтинг: " + userRank.getRating() +
-                ", игр: " + userRank.getGamesCount() +
-                ", побед: " + userRank.getWins() +
-                ", ливов: " + userRank.getLeaves();
     }
 
     @Override

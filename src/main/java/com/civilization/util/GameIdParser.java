@@ -8,8 +8,8 @@ import java.util.regex.Pattern;
 @Component
 public class GameIdParser {
     public String getGameId(String message) {
-        Matcher matcher = Pattern.compile("№\\d+").matcher(message);
+        Matcher matcher = Pattern.compile("#\\d+").matcher(message);
         matcher.find();
-        return matcher.group().replace("№", "");
+        return matcher.group().replace("#", "");
     }
 }

@@ -7,6 +7,7 @@ import com.civilization.repository.ActiveGameRepository;
 import com.civilization.repository.GameResultRepository;
 import com.civilization.repository.UserActiveGameRepository;
 import com.civilization.repository.UserRepository;
+import com.civilization.service.NationRollService;
 import com.civilization.service.UserService;
 import io.vavr.API;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,8 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private UserActiveGameRepository userActiveGameRepository;
     @Autowired
     private GameResultRepository gameResultRepository;
+    @Autowired
+    private NationRollService nationRollService;
 
     @Autowired
     private GameResultsMapper gameResultsMapper;
@@ -50,7 +52,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public List<User> createFFAGameForUsers(List<String> usernames, String hostname) {
         Set<User> users = getOrCreateUsers(usernames);
-        addNewActiveGameForEachUser(users, hostname);
+        List<Nation> rolls = nationRollService.ffaSixRoll();
+        addNewActiveGameForEachUser(users, rolls, hostname);
         return (List<User>) userRepository.saveAll(users);
     }
 
@@ -252,22 +255,31 @@ public class UserServiceImpl implements UserService {
         return currentRating;
     }
 
-    @Override
-    public UserRank findUserRank(String username) {
-        return userRepository.findUserRank(username);
-    }
-
-    private void addNewActiveGameForEachUser(Set<User> users, String hostname) {
+    private void addNewActiveGameForEachUser(Set<User> users, List<Nation> rolls, String hostname) {
         ActiveGame activeGame = activeGameRepository.save(new ActiveGame());
-        for (User user: users) {
+        int slot = 1;
+        ArrayList<User> shuffledUsers = new ArrayList<>(users);
+        Collections.shuffle(shuffledUsers);
+        Iterator<Nation> rollsIterator = rolls.iterator();
+        for (User user: shuffledUsers) {
             UserActiveGame userActiveGame = new UserActiveGame(user, activeGame);
             if (user.getUsername().equalsIgnoreCase(hostname)) {
                 userActiveGame.setGameHost(Boolean.TRUE);
             }
+            userActiveGame.setSlot(slot++);
+            userActiveGame.setUserNationRoll(getRollsForPlayer(rollsIterator));
             user.getUserActiveGames().add(userActiveGame);
             activeGame.getUserActiveGames().add(userActiveGame);
             userActiveGameRepository.save(userActiveGame);
         }
+    }
+
+    private UserNationRoll getRollsForPlayer(Iterator<Nation> rollsIterator) {
+        UserNationRoll userNationRoll = new UserNationRoll();
+        userNationRoll.addNationRoll(rollsIterator.next());
+        userNationRoll.addNationRoll(rollsIterator.next());
+        userNationRoll.addNationRoll(rollsIterator.next());
+        return userNationRoll;
     }
 
     private Set<User> getOrCreateUsers(List<String> usernames) {

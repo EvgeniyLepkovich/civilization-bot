@@ -1,0 +1,22 @@
+plugins {
+    id 'io.spring.dependency-management'
+    id 'java'
+}
+
+group 'DiscordCiviliaztionBot'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile 'de.vandermeer:asciitable:0.3.2'
+    compile project(':user-component')
+    compile project(':nation-pick-component')
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

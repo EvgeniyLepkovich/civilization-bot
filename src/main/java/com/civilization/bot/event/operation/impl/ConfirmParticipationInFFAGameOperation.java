@@ -3,8 +3,14 @@ package com.civilization.bot.event.operation.impl;
 import com.civilization.bot.event.ClearConfirmMessagesAfterGameStartedEvent;
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.cache.CreatedGameMessagesCache;
+import com.civilization.dto.UserDTO;
+import com.civilization.mapper.decorator.UserDtoMapper;
 import com.civilization.model.ActiveGame;
+import com.civilization.model.User;
+import com.civilization.model.UserActiveGame;
 import com.civilization.service.ActiveGameService;
+import com.civilization.service.DrawTableService;
+import com.civilization.service.RatingService;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -12,68 +18,61 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.NotSupportedException;
+import javax.transaction.Transactional;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component("confirmParticipationInFFAGameOperation")
 public class ConfirmParticipationInFFAGameOperation implements EventOperation {
 
-    private static final String GAME_STARTED_MESSAGE_PATTERN_FOR_ALL_PARTICIPANTS_EN =
+    private static final String GAME_STARTED_MESSAGE_PATTERN_FOR_ALL_PARTICIPANTS =
             "{users} - the game was started!\n" +
-            "Game's id: {gameId}\n" +
-            "Start time: {startTime}\n" +
-            "The game owner should create report after game finished";
+                    "Game's id: {gameId}\n" +
+                    "Start time: {startTime}\n" +
+                    "The game owner should create report after game finished";
 
-    private static final String GAME_STARTED_MESSAGE_PATTERN_FOR_ALL_PARTICIPANTS_RU =
-            "{users} - игра началась!\n" +
-            "Id игры: {gameId}\n" +
-            "Время начала: {startTime}\n" +
-            "создатель события обязан подать репорт после окончания игры";
-
-    private static final String GAME_REGISTERED_MESSAGE_PATTERN_EN =
+    private static final String GAME_REGISTERED_MESSAGE_PATTERN =
             "@{triggeredEventOwner} confirmed participation in game {gameId}!\n";
 
-    private static final String GAME_REGISTERED_MESSAGE_PATTERN_RU =
-            "@{triggeredEventOwner} подтвердил участие в игре {gameId}!\n";
-
-    private static final String ERROR_REGISTRATION_PATTERN_EN = //temporal, until not moved to exception codes
-        "Had some troubles including: @{triggeredEventOwner}, in the game: {gameId}!\n";
-
-    private static final String ERROR_REGISTRATION_PATTERN_RU = //temporal, until not moved to exception codes
-        "проблемы подлючения у: @{triggeredEventOwner}, в игре: {gameId}!\n";
+    private static final String ERROR_REGISTRATION_PATTERN = //temporal, until not moved to exception codes
+            "Had some troubles including: @{triggeredEventOwner}, in the game: {gameId}!\n";
 
     @Autowired
     private ActiveGameService activeGameService;
     @Autowired
-    private UpdateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation;
+    private UpdateGameTableOperation updateGameTableOperation;
     @Autowired
     private ClearConfirmMessagesAfterGameStartedEvent clearConfirmMessagesAfterGameStartedEvent;
+    @Autowired
+    private DrawTableService drawTableService;
+    @Autowired
+    private UserDtoMapper userDtoMapper;
 
     @Override
+    @Transactional
     public String execute(MessageReceivedEvent event) throws RateLimitedException {
         String triggeredEventOwner = getTriggeredEventOwner(event);
         Long gameId = getGameId(event.getMessage().getContentDisplay());
-        boolean isEnglish = CreatedGameMessagesCache.getInstance().getLanguage(gameId.toString()).contains("isEnglish");
         Optional<ActiveGame> activeGame = activeGameService.setUserConfirmedGame(gameId, triggeredEventOwner);
 
         if (!activeGame.isPresent()) {
-            return generateExceptionMessage(gameId, triggeredEventOwner, isEnglish);
+            return generateExceptionMessage(gameId, triggeredEventOwner);
         }
 
-
-        String resultMessage = generateGameStartMessage(activeGame.get(), triggeredEventOwner, isEnglish);
-
-        if (isEnglish) {
-            updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation.updateGameMessageEn(activeGame.get());
-        } else {
-            updateMessageOfCreateFFAGameAfterUserConfirmedParticipationOperation.updateGameMessageRu(activeGame.get());
-        }
+        String resultMessage = generateGameStartMessage(activeGame.get(), triggeredEventOwner);
 
         if (activeGame.get().isStarted()) {
+            String newGameTable = drawTableService.drawGameStartedTable(userDtoMapper.toUsersDTO(getUsersInGame(activeGame.get())), gameId);
+            updateGameTableOperation.updateGameMessage(newGameTable, gameId);
+
             clearConfirmMessagesAfterGameStartedEvent.execute(gameId, event);
             //remove started game from the waiting pool
             CreatedGameMessagesCache.getInstance().removeStartedGame(String.valueOf(activeGame.get().getId()));
+        } else {
+            String newGameTable = drawTableService.drawGameTable(userDtoMapper.toUsersDTO(getUsersInGame(activeGame.get())), gameId);
+            updateGameTableOperation.updateGameMessage(newGameTable, gameId);
         }
         return resultMessage;
     }
@@ -83,38 +82,28 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
         throw new NotSupportedException();
     }
 
-    private String generateGameStartMessage(ActiveGame activeGame, String triggeredEventOwner, boolean isEnglish) {
+    private String generateGameStartMessage(ActiveGame activeGame, String triggeredEventOwner) {
         String usersInGame = getUsersInGameAsList(activeGame);
         return activeGame.isStarted()
-                ? generateGameStartMessageForAllParticipant(activeGame, usersInGame, isEnglish)
-                : generateMessageForOneParticipant(activeGame, triggeredEventOwner, isEnglish);
+                ? generateGameStartMessageForAllParticipant(activeGame, usersInGame)
+                : generateMessageForOneParticipant(activeGame, triggeredEventOwner);
     }
 
-    private String generateMessageForOneParticipant(ActiveGame activeGame, String triggeredEventOwner, boolean isEnglish) {
-        String gameRegisteredMessage = isEnglish ?
-                GAME_REGISTERED_MESSAGE_PATTERN_EN :
-                GAME_REGISTERED_MESSAGE_PATTERN_RU;
-        return gameRegisteredMessage
+    private String generateMessageForOneParticipant(ActiveGame activeGame, String triggeredEventOwner) {
+        return GAME_REGISTERED_MESSAGE_PATTERN
                 .replace("{triggeredEventOwner}", triggeredEventOwner)
                 .replace("{gameId}", String.valueOf(activeGame.getId()));
     }
 
-    private String generateGameStartMessageForAllParticipant(ActiveGame activeGame, String usersInGame, boolean isEnglish) {
-        String gameStartedMessage = isEnglish ?
-                GAME_STARTED_MESSAGE_PATTERN_FOR_ALL_PARTICIPANTS_EN :
-                GAME_STARTED_MESSAGE_PATTERN_FOR_ALL_PARTICIPANTS_RU;
-        return gameStartedMessage
+    private String generateGameStartMessageForAllParticipant(ActiveGame activeGame, String usersInGame) {
+        return GAME_STARTED_MESSAGE_PATTERN_FOR_ALL_PARTICIPANTS
                 .replace("{users}", usersInGame)
                 .replace("{gameId}", String.valueOf(activeGame.getId()))
                 .replace("{startTime}", activeGame.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm")));
     }
 
-    private String generateExceptionMessage(Long activeGameId, String triggeredEventOwner, boolean isEnglish) {
-        String exceptionMessage = isEnglish ?
-                ERROR_REGISTRATION_PATTERN_EN :
-                ERROR_REGISTRATION_PATTERN_RU;
-
-        return exceptionMessage
+    private String generateExceptionMessage(Long activeGameId, String triggeredEventOwner) {
+        return ERROR_REGISTRATION_PATTERN
                 .replace("{triggeredEventOwner}", triggeredEventOwner)
                 .replace("{gameId}", String.valueOf(activeGameId));
 
@@ -129,6 +118,12 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
         return activeGame.getUserActiveGames().stream()
                 .map(uag -> uag.getUser().getUsername())
                 .collect(Collectors.joining(", "));
+    }
+
+    private List<User> getUsersInGame(ActiveGame activeGame) {
+        return activeGame.getUserActiveGames().stream()
+                .map(UserActiveGame::getUser)
+                .collect(Collectors.toList());
     }
 
     private String getTriggeredEventOwner(MessageReceivedEvent event) {

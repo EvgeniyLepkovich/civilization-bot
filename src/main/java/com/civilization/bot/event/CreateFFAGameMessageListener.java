@@ -38,9 +38,9 @@ public class CreateFFAGameMessageListener extends BaseMessageListener {
     @Override
     protected void sendMessage(MessageReceivedEvent event) throws Exception {
         try {
-            MessageEmbed messageEmbed = eventOperation.executeForMessageEmbed(event);
-            Message message = event.getChannel().sendMessage(messageEmbed).complete(true);
-            CreatedGameMessagesCache.getInstance().putMessage(gameIdParser.getGameId(messageEmbed.getTitle()), message);
+            String table = eventOperation.execute(event);
+            Message message = event.getChannel().sendMessage("```" + table + "```").complete(true);
+            CreatedGameMessagesCache.getInstance().putMessage(gameIdParser.getGameId(table), message);
         } catch (CodedException e) {
             event.getChannel().sendMessage(e.getMessage()).queue();
         }

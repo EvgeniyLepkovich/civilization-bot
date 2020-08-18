@@ -2,6 +2,7 @@ package com.civilization.bot.event.operation.impl;
 
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.model.UserRank;
+import com.civilization.service.RatingService;
 import com.civilization.service.UserService;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -14,11 +15,11 @@ import javax.transaction.NotSupportedException;
 public class SelfRankOperation implements EventOperation {
 
     @Autowired
-    private UserService userService;
+    private RatingService ratingService;
 
     @Override
     public String execute(MessageReceivedEvent event) {
-        return getUserRankMessage(userService.findUserRank(getAuthorName(event)));
+        return getUserRankMessage(ratingService.findUserRank(getAuthorName(event)));
     }
 
     private String getUserRankMessage(UserRank userRank) {

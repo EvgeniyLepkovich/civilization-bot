@@ -26,6 +26,10 @@ dependencies {
     compile group: 'net.dv8tion', name: 'JDA2', version: '3.6.2_DEV'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     compile group: 'io.vavr', name: 'vavr', version: '1.0.0-alpha-3'
+    compile 'de.vandermeer:asciitable:0.3.2'
+    compile project(':user-component')
+    compile project(':table-component')
+    compile project(':rating-component')
     compileOnly("org.mapstruct:mapstruct-jdk8:${mapstructVersion}")
 
     testCompile group: 'junit', name: 'junit', version: '4.12'

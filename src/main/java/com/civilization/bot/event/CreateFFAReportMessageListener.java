@@ -5,7 +5,7 @@ import com.civilization.bot.event.rule.MessageListenedAppliedRule;
 import com.civilization.bot.event.validator.MessageValidator;
 import com.civilization.configuration.custom.DiscordMessageListenerQualifier;
 import com.civilization.configuration.custom.annotation.RatingGamesChannelEventAnnotation;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,7 +30,7 @@ public class CreateFFAReportMessageListener extends BaseMessageListener {
 
     @Override
     protected void sendMessage(MessageReceivedEvent event) throws Exception {
-        MessageEmbed messageEmbed = eventOperation.executeForMessageEmbed(event);
-        event.getChannel().sendMessage(messageEmbed).complete(true);
+        String table = eventOperation.execute(event);
+        event.getChannel().sendMessage("```" + table + "```").complete(true);
     }
 }

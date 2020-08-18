@@ -44,14 +44,12 @@ public class ActiveGameServiceImpl implements ActiveGameService {
     }
 
     @Override
-    @Transactional
     public Optional<ActiveGame> setUserDeclinedGame(Long gameId, String username) {
         Optional<ActiveGame> activeGame = activeGameRepository.findById(gameId);
         if (!activeGame.isPresent() || activeGame.get().isStarted() || !isUserInGameList(activeGame.get(), username)) {
             return Optional.empty();
         }
         ActiveGame game = activeGame.get();
-//        game.getUserActiveGames().forEach(user -> user.getActiveGames().remove(game));
         activeGameRepository.delete(game);
         return activeGame;
     }
