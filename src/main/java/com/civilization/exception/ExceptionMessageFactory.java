@@ -18,6 +18,9 @@ public class ExceptionMessageFactory {
         put(ExceptionCode.NOTIFICATION_MESSAGE_IS_BLANK, "Notification message is blank, please put something after !send");
         put(ExceptionCode.NO_AVAILABLE_CHANNELS_FOR_EVENT, "No available channels for event");
         put(ExceptionCode.CHANNEL_NOT_SUPPORTED_FOR_EVENT, "Channel not supported for event");
+        put(ExceptionCode.NOT_ENOUGH_PERMISSIONS, "You don't have enough permission to execute operation");
+        put(ExceptionCode.GAME_NOT_FOUND, "Can't find the game");
+        put(ExceptionCode.GAME_NOT_STARTED, "Game not started");
     }};
 
     public static String getMessage(ExceptionCode code) {

@@ -3,14 +3,13 @@ package com.civilization.bot.event.operation.impl;
 import com.civilization.bot.event.ClearConfirmMessagesAfterGameStartedEvent;
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.cache.CreatedGameMessagesCache;
-import com.civilization.dto.UserDTO;
-import com.civilization.mapper.decorator.UserDtoMapper;
+import com.civilization.mapper.UserDtoMapper;
 import com.civilization.model.ActiveGame;
+import com.civilization.model.GameStatus;
 import com.civilization.model.User;
 import com.civilization.model.UserActiveGame;
 import com.civilization.service.ActiveGameService;
 import com.civilization.service.DrawTableService;
-import com.civilization.service.RatingService;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -63,7 +62,7 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
 
         String resultMessage = generateGameStartMessage(activeGame.get(), triggeredEventOwner);
 
-        if (activeGame.get().isStarted()) {
+        if (isGameStarted(activeGame.get())) {
             String newGameTable = drawTableService.drawGameStartedTable(userDtoMapper.toUsersDTO(getUsersInGame(activeGame.get())), gameId);
             updateGameTableOperation.updateGameMessage(newGameTable, gameId);
 
@@ -77,6 +76,10 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
         return resultMessage;
     }
 
+    private boolean isGameStarted(ActiveGame activeGame) {
+        return GameStatus.START.equals(activeGame.getGameStatus());
+    }
+
     @Override
     public MessageEmbed executeForMessageEmbed(MessageReceivedEvent event) throws Exception {
         throw new NotSupportedException();
@@ -84,7 +87,7 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
 
     private String generateGameStartMessage(ActiveGame activeGame, String triggeredEventOwner) {
         String usersInGame = getUsersInGameAsList(activeGame);
-        return activeGame.isStarted()
+        return isGameStarted(activeGame)
                 ? generateGameStartMessageForAllParticipant(activeGame, usersInGame)
                 : generateMessageForOneParticipant(activeGame, triggeredEventOwner);
     }

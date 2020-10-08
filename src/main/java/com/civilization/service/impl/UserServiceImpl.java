@@ -1,7 +1,9 @@
 package com.civilization.service.impl;
 
 import com.civilization.dto.GameResultDTO;
-import com.civilization.mapper.decorator.GameResultsMapper;
+import com.civilization.dto.ScrappedActiveGameDTO;
+import com.civilization.mapper.GameResultsMapper;
+import com.civilization.mapper.ScrappedActiveGameMapper;
 import com.civilization.model.*;
 import com.civilization.repository.ActiveGameRepository;
 import com.civilization.repository.GameResultRepository;
@@ -37,6 +39,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private GameResultsMapper gameResultsMapper;
+    @Autowired
+    private ScrappedActiveGameMapper scrappedActiveGameMapper;
 
     @Override
     public User findByUsername(String username) {
@@ -74,6 +78,26 @@ public class UserServiceImpl implements UserService {
         return gameResultsMapper.map(savedUsers, gameResults.get(0).getGameId());
     }
 
+    @Override
+    @Transactional
+    public List<ScrappedActiveGameDTO> scrapOldGames() {
+        List<ActiveGame> games = activeGameRepository.getGamesOlderThenWeek();
+        scrapAllGames(games);
+
+        return games.stream()
+                .map(scrappedActiveGameMapper::map)
+                .collect(Collectors.toList());
+    }
+
+    private void scrapAllGames(List<ActiveGame> games) {
+        games.forEach(this::scrapGame);
+    }
+
+    private void scrapGame(ActiveGame activeGame) {
+        activeGame.setGameStatus(GameStatus.SCRAP);
+        activeGameRepository.save(activeGame);
+    }
+
     private void addDestroyedUsersToGameResults(List<GameResultDTO> gameResults) throws Exception {
         ActiveGame activeGame = getActiveGame(gameResults.get(0).getGameId());
         List<User> destroyedUsers = getListOfDestroyedUsers(activeGame, gameResults);
@@ -105,12 +129,12 @@ public class UserServiceImpl implements UserService {
         }
 
         ActiveGame activeGame = getActiveGame(gameResults.get(0).getGameId());
-        if (activeGame.isReported()) {
+        if (isGameReported(activeGame)) {
             throw new Exception("this game was already reported");
         }
 
-        if (!activeGame.isStarted()) {
-            throw new Exception("this game was not started yet");
+        if (!isGameStarted(activeGame) && !(isAdmin && isGameFrozen(activeGame))) {
+            throw new Exception("this game was not started yet or was frozen");
         }
 
         if (!isAllPlayersParticipantOnGame(activeGame, gameResults)) {
@@ -122,6 +146,11 @@ public class UserServiceImpl implements UserService {
         if (!isHostedByGameOwner(activeGame, eventOwner)) {
             throw new Exception("reported not by game owner");
         }
+    }
+
+    //TODO: move to the dto
+    private boolean isGameFrozen(ActiveGame activeGame) {
+        return GameStatus.FREEZE.equals(activeGame.getGameStatus());
     }
 
     private boolean isHostedByGameOwner(ActiveGame activeGame, String eventOwner) throws Exception {
@@ -165,7 +194,7 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findByUsername(gameResultDTO.getUsername());
         ActiveGame concreteGame = findConcreteGame(user, gameResultDTO.getGameId());
-        concreteGame.setReported(Boolean.TRUE);
+        concreteGame.setGameStatus(GameStatus.REPORTED);
         concreteGame.getGameResult().add(gameResult);
         gameResult.setActiveGame(concreteGame);
         gameResult.setUser(user);
@@ -291,5 +320,15 @@ public class UserServiceImpl implements UserService {
     private User getOrCreateUser(String username) {
         User user = userRepository.findByUsername(username);
         return user == null ? userRepository.save(new User(username, DEFAULT_RAITING)) : user;
+    }
+
+    //TODO: move all this to DTO
+    private boolean isGameStarted(ActiveGame activeGame) {
+        return GameStatus.START.equals(activeGame.getGameStatus());
+    }
+
+    //TODO: move all this to DTO
+    private boolean isGameReported(ActiveGame activeGame) {
+        return GameStatus.REPORTED.equals(activeGame.getGameStatus());
     }
 }

@@ -1,6 +1,9 @@
 package com.civilization.service.impl;
 
+import com.civilization.exception.GameNotFoundException;
+import com.civilization.exception.GameNotStartedException;
 import com.civilization.model.ActiveGame;
+import com.civilization.model.GameStatus;
 import com.civilization.model.User;
 import com.civilization.model.UserActiveGame;
 import com.civilization.repository.ActiveGameRepository;
@@ -30,7 +33,7 @@ public class ActiveGameServiceImpl implements ActiveGameService {
             confirmParticipationInActiveGame(user.get(), gameId);
         }
         if (shouldBeActiveGameStarted(activeGame)) {
-            game.setStarted(Boolean.TRUE);
+            game.setGameStatus(GameStatus.START);
             game.setStartDate(LocalDateTime.now());
         }
         activeGameRepository.save(game);
@@ -46,12 +49,29 @@ public class ActiveGameServiceImpl implements ActiveGameService {
     @Override
     public Optional<ActiveGame> setUserDeclinedGame(Long gameId, String username) {
         Optional<ActiveGame> activeGame = activeGameRepository.findById(gameId);
-        if (!activeGame.isPresent() || activeGame.get().isStarted() || !isUserInGameList(activeGame.get(), username)) {
+        if (!activeGame.isPresent() || isGameStarted(activeGame.get()) || !isUserInGameList(activeGame.get(), username)) {
             return Optional.empty();
         }
         ActiveGame game = activeGame.get();
         activeGameRepository.delete(game);
         return activeGame;
+    }
+
+    @Override
+    public void freezeGame(Long gameId) {
+        //TODO: move validation to separate class
+        Optional<ActiveGame> activeGame = activeGameRepository.findById(gameId);
+        if (!activeGame.isPresent()) {
+            throw new GameNotFoundException();
+        }
+
+        ActiveGame ag = activeGame.get();
+        if (!GameStatus.START.equals(ag.getGameStatus())) {
+            throw new GameNotStartedException();
+        }
+
+        ag.setGameStatus(GameStatus.FREEZE);
+        activeGameRepository.save(ag);
     }
 
     private Optional<User> getUserToConfirmParticipation(String username, Optional<ActiveGame> activeGame) {
@@ -69,5 +89,10 @@ public class ActiveGameServiceImpl implements ActiveGameService {
 
     private boolean isUserInGameList(ActiveGame activeGame, String username) {
         return activeGame.getUserActiveGames().stream().anyMatch(uag -> uag.getUser().getUsername().equalsIgnoreCase(username));
+    }
+
+    //TODO: move all this to DTO
+    private boolean isGameStarted(ActiveGame activeGame) {
+        return GameStatus.START.equals(activeGame.getGameStatus());
     }
 }

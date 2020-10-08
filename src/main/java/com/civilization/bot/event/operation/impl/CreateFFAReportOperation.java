@@ -2,7 +2,7 @@ package com.civilization.bot.event.operation.impl;
 
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.dto.GameResultDTO;
-import com.civilization.mapper.decorator.GameResultsMapper;
+import com.civilization.mapper.GameResultsMapper;
 import com.civilization.service.DrawTableService;
 import com.civilization.service.UserService;
 import net.dv8tion.jda.core.entities.MessageEmbed;

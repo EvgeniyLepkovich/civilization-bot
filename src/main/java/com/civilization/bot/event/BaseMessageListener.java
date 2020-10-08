@@ -55,7 +55,7 @@ public class BaseMessageListener extends ListenerAdapter {
             checkAvailableChannel(event);
             sendMessage(event);
         } catch (CodedException e) {
-            event.getChannel().sendMessage(e.getMessage()).queue();
+            event.getChannel().sendMessage("```" + e.getMessage() + "```").queue();
         } catch (Exception e) {
             e.printStackTrace();
         }

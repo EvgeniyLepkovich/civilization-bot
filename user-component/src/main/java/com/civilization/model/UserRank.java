@@ -6,4 +6,5 @@ public interface UserRank {
     Long getGamesCount();
     Long getWins();
     Long getLeaves();
+    Long getScrap();
 }

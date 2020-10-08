@@ -1,5 +1,6 @@
 package com.civilization.exception;
 
+//TODO: add possibility to put parameters
 public class CodedException extends RuntimeException {
 
     public CodedException(ExceptionCode code) {

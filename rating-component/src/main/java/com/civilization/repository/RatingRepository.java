@@ -13,7 +13,8 @@ public interface RatingRepository extends CrudRepository<User, Long> {
     @Query(value =
             "select u.username, u.rating, count(gr.game_result_id) as gamesCount, " +
                     "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"WINNER\" and username = ?1) as wins, " +
-                    "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"LEAVE\" and username = ?1) as leaves " +
+                    "(select count(*) from user u left join game_result gr on gr.user_id = u.user_id where gr.user_game_result = \"LEAVE\" and username = ?1) as leaves, " +
+                    "(select count(*) from user u left join user_active_game uag on uag.user_id = u.user_id left join active_game ag on ag.active_game_id = uag.active_game_id where ag.game_status = \"SCRAP\" and username = ?1) as scrap " +
                     "from user as u " +
                     "left join game_result gr on gr.user_id = u.user_id " +
                     "where username = ?1 " +

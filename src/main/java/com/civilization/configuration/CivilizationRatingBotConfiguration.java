@@ -30,7 +30,7 @@ public class CivilizationRatingBotConfiguration {
     @Value("${bot.token}")
     private String botToken;
 
-    @Value("${bot.rating-channel-id}")
+    @Value("${discord.channel.rating.channel-id}")
     private Long ratingChannelId;
 
     @Autowired

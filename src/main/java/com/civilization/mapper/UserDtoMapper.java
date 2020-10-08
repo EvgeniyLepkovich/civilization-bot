@@ -1,4 +1,4 @@
-package com.civilization.mapper.decorator;
+package com.civilization.mapper;
 
 import com.civilization.dto.UserDTO;
 import com.civilization.model.User;

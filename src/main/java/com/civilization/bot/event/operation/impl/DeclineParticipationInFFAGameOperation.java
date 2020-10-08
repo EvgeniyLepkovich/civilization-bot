@@ -1,7 +1,7 @@
 package com.civilization.bot.event.operation.impl;
 
 import com.civilization.bot.event.operation.EventOperation;
-import com.civilization.mapper.decorator.UserDtoMapper;
+import com.civilization.mapper.UserDtoMapper;
 import com.civilization.model.ActiveGame;
 import com.civilization.model.User;
 import com.civilization.model.UserActiveGame;

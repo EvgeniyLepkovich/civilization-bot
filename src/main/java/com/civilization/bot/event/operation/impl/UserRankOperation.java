@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.NotSupportedException;
 
 @Component("userRankOperation")
+//TODO: combine with SelfRankOperation
 public class UserRankOperation implements EventOperation {
 
     @Autowired
@@ -29,7 +30,8 @@ public class UserRankOperation implements EventOperation {
                 " rating: " + userRank.getRating() +
                 ", games: " + userRank.getGamesCount() +
                 ", wins: " + userRank.getWins() +
-                ", leaves: " + userRank.getLeaves();
+                ", leaves: " + userRank.getLeaves() +
+                ", scrap: " + userRank.getScrap();
     }
 
     @Override

@@ -1,17 +1,20 @@
 bot:
-  token: Njg1MjQ5MDM2OTk0NzQwMjQy.XofHAg.5KCA1IDVl_SmAXSRU_sbmPTyDlc
-  rating-channel-id: 706585065815015487
+  token: Njk4NjAyOTYwMDc4MzcyOTM0.XpIOtQ.MgK5-V2RP_AiKZaD5FhHP5-nqJE
+
 
 host: localhost
 
 spring:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
   datasource:
-    url: jdbc:mysql://${host:localhost}:3306/civilization_rating_database
+    url: jdbc:mysql://${host:localhost}:3306/civilization_rating_database?serverTimezone=UTC
     username: civilizationBot
-    password: 1234567890
+    password: 123456789
 
 discord:
   administrator:
@@ -22,4 +25,9 @@ discord:
     notification:
       name: notification
     rating-games:
+#      TODO: split by twp channels
       name: рейтинговые-игры, рейтинговые-отчеты
+#      TODO: update for different discords
+      channel-id: 692408363178524673
+    rating:
+      channel-id: 706585065815015487
