@@ -7,9 +7,9 @@ import java.util.regex.Pattern;
 
 @Component
 public class GameIdParser {
-    public String getGameId(String message) {
+    public Long getGameId(String message) {
         Matcher matcher = Pattern.compile("#\\d+").matcher(message);
         matcher.find();
-        return matcher.group().replace("#", "");
+        return Long.parseLong(matcher.group().replace("#", ""));
     }
 }

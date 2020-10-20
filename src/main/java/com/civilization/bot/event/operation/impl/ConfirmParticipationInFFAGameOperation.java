@@ -2,7 +2,7 @@ package com.civilization.bot.event.operation.impl;
 
 import com.civilization.bot.event.ClearConfirmMessagesAfterGameStartedEvent;
 import com.civilization.bot.event.operation.EventOperation;
-import com.civilization.cache.CreatedGameMessagesCache;
+import com.civilization.dto.LobbyDto;
 import com.civilization.mapper.UserDtoMapper;
 import com.civilization.model.ActiveGame;
 import com.civilization.model.GameStatus;
@@ -10,6 +10,7 @@ import com.civilization.model.User;
 import com.civilization.model.UserActiveGame;
 import com.civilization.service.ActiveGameService;
 import com.civilization.service.DrawTableService;
+import com.civilization.service.LobbyService;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
@@ -48,6 +49,8 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
     private DrawTableService drawTableService;
     @Autowired
     private UserDtoMapper userDtoMapper;
+    @Autowired
+    private LobbyService lobbyService;
 
     @Override
     @Transactional
@@ -68,7 +71,7 @@ public class ConfirmParticipationInFFAGameOperation implements EventOperation {
 
             clearConfirmMessagesAfterGameStartedEvent.execute(gameId, event);
             //remove started game from the waiting pool
-            CreatedGameMessagesCache.getInstance().removeStartedGame(String.valueOf(activeGame.get().getId()));
+            lobbyService.startLobbyGame(new LobbyDto(gameId, ""));
         } else {
             String newGameTable = drawTableService.drawGameTable(userDtoMapper.toUsersDTO(getUsersInGame(activeGame.get())), gameId);
             updateGameTableOperation.updateGameMessage(newGameTable, gameId);

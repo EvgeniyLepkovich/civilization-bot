@@ -1,5 +1,6 @@
 package com.civilization.configuration;
 
+import com.civilization.bot.DiscordBot;
 import com.civilization.dto.ScrappedActiveGameDTO;
 import com.civilization.service.UserService;
 import net.dv8tion.jda.core.JDA;
@@ -19,8 +20,6 @@ public class AutoGameScrapConfiguration {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private JDA jda;
 
     //TODO: move to the configuration table
     @Value("${discord.channel.rating-games.channel-id}")
@@ -28,12 +27,13 @@ public class AutoGameScrapConfiguration {
 
     @PostConstruct
     public void initAutoScrapTimer() {
+        JDA botInstance = DiscordBot.getInstance().getBotInstance();
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 List<ScrappedActiveGameDTO> games = userService.scrapOldGames();
                 games
-                        .forEach(game -> jda.getTextChannelById(channelId)
+                        .forEach(game -> botInstance.getTextChannelById(channelId)
                                 .sendMessage("```" + getMessageForScrappedGames(game) + "```").queue());
             }
         };

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private static final long DEFAULT_RAITING = 1000L;
-    public static final int BONUS_RATING_FOR_ALIVE = 15;
+    public static final int BONUS_RATING_FOR_ALIVE = 10;
     public static final int KOEF_FOR_LEAVERS = 3;
 
     @Autowired

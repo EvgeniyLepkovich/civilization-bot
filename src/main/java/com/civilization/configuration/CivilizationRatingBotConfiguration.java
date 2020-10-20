@@ -1,6 +1,6 @@
 package com.civilization.configuration;
 
-import com.civilization.bot.CivilizationRatingBot;
+import com.civilization.bot.DiscordBot;
 import com.civilization.configuration.custom.DiscordMessageListenerQualifier;
 import com.civilization.service.RatingTableService;
 import net.dv8tion.jda.core.JDA;
@@ -10,25 +10,18 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.security.auth.login.LoginException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import javax.annotation.PostConstruct;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Configuration
 public class CivilizationRatingBotConfiguration {
 
-    private static final int UPDATE_RATING_TABLE_DELAY = 600000;
-    private static final int UPDATE_RATING_TABLE_PERIOD = 600000;
+    private static final int UPDATE_RATING_TABLE_DELAY = 5000;
+    private static final int UPDATE_RATING_TABLE_PERIOD = 5000;
     private static final int LIMIT = 50;
-
-    @Value("${bot.token}")
-    private String botToken;
 
     @Value("${discord.channel.rating.channel-id}")
     private Long ratingChannelId;
@@ -40,11 +33,17 @@ public class CivilizationRatingBotConfiguration {
     @Autowired
     private RatingTableService ratingTableService;
 
-    @Bean(name = "CivilizationRatingBotInstance")
-    public JDA getCivilizationRatingBot() throws LoginException {
-        JDA bot = new CivilizationRatingBot().initBot(botToken);
+    @PostConstruct
+    public void init() {
+        DiscordBot discordBot = DiscordBot.getInstance();
+        discordBot.addListeners(Collections.singletonList(getDrawRatingTableEvent(discordBot.getBotInstance())));
+        discordBot.addListeners(listeners);
+    }
+
+    private ListenerAdapter getDrawRatingTableEvent(JDA bot) {
         Consumer<JDA> drawRatingTableConsumer = this::drawRatingTable;
-        bot.addEventListener(new ListenerAdapter() {
+
+        return new ListenerAdapter() {
             @Override
             public void onReady(ReadyEvent event) {
                 drawRatingTableConsumer.accept(bot);
@@ -54,10 +53,7 @@ public class CivilizationRatingBotConfiguration {
                         drawRatingTableConsumer.accept(bot);
                     }
                 }, UPDATE_RATING_TABLE_DELAY, UPDATE_RATING_TABLE_PERIOD);
-            }});
-
-        listeners.forEach(bot::addEventListener);
-        return bot;
+            }};
     }
 
     private void drawRatingTable(JDA botInstance) {

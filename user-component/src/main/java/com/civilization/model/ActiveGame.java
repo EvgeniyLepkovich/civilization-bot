@@ -13,7 +13,6 @@ public class ActiveGame {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "active_game_generator")
-    //TODO: don't forget to update this number
     @SequenceGenerator(name = "active_game_generator", sequenceName = "active_game_sequence", initialValue = 2500)
     @Column(name = "active_game_id")
     private long id;

@@ -1,23 +1,25 @@
 package com.civilization.bot.event.operation.impl;
 
-import com.civilization.cache.CreatedGameMessagesCache;
-import com.civilization.model.ActiveGame;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
+import com.civilization.bot.DiscordBot;
+import com.civilization.dto.LobbyDto;
+import com.civilization.service.LobbyService;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.awt.*;
-import java.util.Comparator;
 
 @Component
 public class UpdateGameTableOperation {
 
+    @Autowired
+    private LobbyService lobbyService;
+
+    @Value("${discord.channel.rating-games.channel-id}")
+    private Long ratingGamesChannelId;
+
     public void updateGameMessage(String newGameTable, Long gameId) throws RateLimitedException {
-        CreatedGameMessagesCache createdGameMessagesCache = CreatedGameMessagesCache.getInstance();
-        Message message = createdGameMessagesCache.getMessage(gameId);
-        Message updatedMessage = message.editMessage("```" + newGameTable + "```").complete(false);
-        createdGameMessagesCache.putMessage(gameId.toString(), updatedMessage);
+        LobbyDto lobby = lobbyService.getLobbyByGameId(gameId);
+        DiscordBot.getInstance().getBotInstance().getTextChannelById(ratingGamesChannelId)
+                .editMessageById(lobby.getLobbyMessageId(), "```" + newGameTable + "```").queue();
     }
 }
