@@ -5,8 +5,8 @@ import com.civilization.dto.GameResultDTO;
 import com.civilization.mapper.GameResultsMapper;
 import com.civilization.service.DrawTableService;
 import com.civilization.service.UserService;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

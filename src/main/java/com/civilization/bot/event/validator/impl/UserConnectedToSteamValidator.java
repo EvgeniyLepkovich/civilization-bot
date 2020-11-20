@@ -2,8 +2,8 @@ package com.civilization.bot.event.validator.impl;
 
 import com.civilization.bot.event.validator.Validator;
 import com.civilization.exception.UserNotConnectedToSteamException;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

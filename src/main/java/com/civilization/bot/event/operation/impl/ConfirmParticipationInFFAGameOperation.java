@@ -11,9 +11,9 @@ import com.civilization.model.UserActiveGame;
 import com.civilization.service.ActiveGameService;
 import com.civilization.service.DrawTableService;
 import com.civilization.service.LobbyService;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

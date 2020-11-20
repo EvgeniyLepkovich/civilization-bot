@@ -3,17 +3,21 @@ package com.civilization.configuration;
 import com.civilization.bot.DiscordBot;
 import com.civilization.configuration.custom.DiscordMessageListenerQualifier;
 import com.civilization.service.RatingTableService;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 @Configuration

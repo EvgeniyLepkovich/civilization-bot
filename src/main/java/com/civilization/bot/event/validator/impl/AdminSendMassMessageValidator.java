@@ -3,8 +3,8 @@ package com.civilization.bot.event.validator.impl;
 import com.civilization.bot.event.validator.Validator;
 import com.civilization.exception.NotificationSentNotByAdminException;
 import com.civilization.exception.WrongChannelNameForNotificationsException;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

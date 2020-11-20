@@ -2,10 +2,8 @@ package com.civilization.bot.event;
 
 import com.civilization.configuration.custom.DiscordMessageListenerQualifier;
 import com.civilization.service.NotificationSenderService;
-import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,16 +21,6 @@ public class UserJoinGuildListener extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        notificationSenderService.sendNotificationToNewUser(event.getJDA(), event.getMember().getNickname(), NEW_USER_JOIN_MESSAGE);
-    }
-
-    @Override
-    public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
-        System.out.println("just here");
-    }
-
-    @Override
-    public void onGuildJoin(GuildJoinEvent event) {
-        System.out.println("just here");
+        notificationSenderService.sendNotificationToNewUser(event.getJDA(), event.getMember().getUser(), NEW_USER_JOIN_MESSAGE);
     }
 }

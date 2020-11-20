@@ -23,7 +23,6 @@ ext {
 }
 
 dependencies {
-    compile group: 'net.dv8tion', name: 'JDA2', version: '3.6.2_DEV'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     compile group: 'io.vavr', name: 'vavr', version: '1.0.0-alpha-3'
     compile 'de.vandermeer:asciitable:0.3.2'
@@ -37,6 +36,7 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
+    implementation 'net.dv8tion:JDA:4.2.0_217'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

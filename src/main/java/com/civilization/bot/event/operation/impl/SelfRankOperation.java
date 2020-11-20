@@ -3,9 +3,8 @@ package com.civilization.bot.event.operation.impl;
 import com.civilization.bot.event.operation.EventOperation;
 import com.civilization.model.UserRank;
 import com.civilization.service.RatingService;
-import com.civilization.service.UserService;
-import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

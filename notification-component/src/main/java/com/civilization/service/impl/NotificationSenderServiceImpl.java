@@ -2,8 +2,8 @@ package com.civilization.service.impl;
 
 import com.civilization.service.NotificationSenderService;
 import com.civilization.util.NotificationMessageParser;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.User;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -25,8 +25,7 @@ public class NotificationSenderServiceImpl implements NotificationSenderService 
     }
 
     @Override
-    public void sendNotificationToNewUser(JDA jda, String username, String message) {
-        User user = jda.getUsersByName(username, false).stream().findFirst().get();
+    public void sendNotificationToNewUser(JDA jda, User user, String message) {
         user.openPrivateChannel().queue(q -> q.sendMessage(message).queue());
     }
 

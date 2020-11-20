@@ -1,7 +1,7 @@
 package com.civilization.discord;
 
 import com.civilization.bot.DiscordBot;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

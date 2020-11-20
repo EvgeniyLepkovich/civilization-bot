@@ -3,7 +3,7 @@ package com.civilization.configuration;
 import com.civilization.bot.DiscordBot;
 import com.civilization.dto.ScrappedActiveGameDTO;
 import com.civilization.service.UserService;
-import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.api.JDA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

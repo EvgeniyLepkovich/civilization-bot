@@ -3,7 +3,7 @@ package com.civilization.bot.event.operation.impl;
 import com.civilization.bot.DiscordBot;
 import com.civilization.dto.LobbyDto;
 import com.civilization.service.LobbyService;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
