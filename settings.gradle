@@ -4,4 +4,5 @@ include 'nation-pick-component'
 include 'rating-component'
 include 'lobby-component'
 include 'discord-bot-component'
+include 'notification-component'
 

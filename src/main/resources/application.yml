@@ -1,13 +1,9 @@
-bot:
-  token: Njk4NjAyOTYwMDc4MzcyOTM0.XpIOtQ.MgK5-V2RP_AiKZaD5FhHP5-nqJE
-
-
 host: localhost
 
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect

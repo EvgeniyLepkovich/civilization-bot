@@ -1,7 +1,5 @@
 package com.civilization.service.impl;
 
-import com.civilization.exception.NotificationMessageIsBlankException;
-import com.civilization.exception.UsersForNotificationNotFoundException;
 import com.civilization.service.NotificationSenderService;
 import com.civilization.util.NotificationMessageParser;
 import net.dv8tion.jda.core.JDA;
@@ -24,6 +22,12 @@ public class NotificationSenderServiceImpl implements NotificationSenderService 
         sendMessageToAllUsers(jda, messageToSend);
 
         return true;
+    }
+
+    @Override
+    public void sendNotificationToNewUser(JDA jda, String username, String message) {
+        User user = jda.getUsersByName(username, false).stream().findFirst().get();
+        user.openPrivateChannel().queue(q -> q.sendMessage(message).queue());
     }
 
     private String getMessageToSend(String message) {
@@ -51,13 +55,13 @@ public class NotificationSenderServiceImpl implements NotificationSenderService 
 
     private void checkUsers(List<User> users) {
         if (CollectionUtils.isEmpty(users)) {
-            throw new UsersForNotificationNotFoundException();
+            throw new RuntimeException();
         }
     }
 
     private void checkMessageToSend(String messageToSend) {
         if (StringUtils.isBlank(messageToSend)) {
-            throw new NotificationMessageIsBlankException();
+            throw new RuntimeException();
         }
     }
 }
